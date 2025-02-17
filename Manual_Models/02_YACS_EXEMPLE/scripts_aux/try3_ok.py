@@ -1,142 +1,92 @@
 #!/usr/bin/env python
 
-import paraview
-paraview.compatibility.major = 5
-paraview.compatibility.minor = 11
+import sys
+sys.path.append("D:/SALOME-9.10.0/W64/ParaView/bin/Lib/site-packages")
+import paraview.simple as pvs
 
-#### import the simple module from the paraview
-from paraview.simple import *
-#### disable automatic camera reset on 'Show'
-paraview.simple._DisableFirstRenderCameraReset()
+# Desativar reset automático da câmera
+pvs._DisableFirstRenderCameraReset()
 
-# create a new 'MED Reader'
-plateresrmed = MEDReader(registrationName='plate-res.rmed', FileNames=['D:\\00_MODELOS\\GITHUB\\Salome_Scripts\\Manual_Models\\02_YACS_EXEMPLE\\plate-res.rmed'])
+# Caminho do arquivo MED
+med_file_path = "D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/plate-res.rmed"
 
-# Properties modified on plateresrmed
-plateresrmed.FieldsStatus = ['TS0/00000001/ComSup0/reslin__DEPL@@][@@P1', 'TS0/00000001/ComSup0/reslin__SIEF_ELGA@@][@@GAUSS', 'TS0/00000001/ComSup0/reslin__SIEQ_ELGA@@][@@GAUSS', 'TS0/00000001/ComSup0/reslin__SIEQ_ELNO@@][@@GSSNE', 'TS0/00000001/ComSup0/reslin__SIEQ_NOEU@@][@@P1']
+# Criar um novo leitor MED
+plateresrmed = pvs.MEDReader(registrationName='plate-res.rmed', FileNames=[med_file_path])
 
-# get active source.
-plateresrmed = GetActiveSource()
+# Definir campos a serem lidos
+plateresrmed.FieldsStatus = [
+    'TS0/00000001/ComSup0/reslin__DEPL@@][@@P1',
+    'TS0/00000001/ComSup0/reslin__SIEF_ELGA@@][@@GAUSS',
+    'TS0/00000001/ComSup0/reslin__SIEQ_ELGA@@][@@GAUSS',
+    'TS0/00000001/ComSup0/reslin__SIEQ_ELNO@@][@@GSSNE',
+    'TS0/00000001/ComSup0/reslin__SIEQ_NOEU@@][@@P1'
+]
 
-# get active view
-renderView1 = GetActiveViewOrCreate('RenderView')
+# Criar visualizações
+renderView1 = pvs.GetActiveViewOrCreate('RenderView')
+plateresrmedDisplay = pvs.Show(plateresrmed, renderView1)
 
-# get display properties
-plateresrmedDisplay = GetDisplayProperties(plateresrmed, view=renderView1)
+renderView2 = pvs.CreateView('RenderView')  # Use CreateView para garantir a criação de uma nova visualização
+plateresrmedDisplay2 = pvs.Show(plateresrmed, renderView2)
 
-# reset view to fit data
+# Ajustar visualização 1 (para stress)
 renderView1.ResetCamera(False)
-
-# update the view to ensure updated data information
 renderView1.Update()
 
-# set active source
-SetActiveSource(plateresrmed)
-
-# set scalar coloring
-ColorBy(plateresrmedDisplay, ('POINTS', 'reslin__SIEQ_NOEU', 'Magnitude'))
-
-# rescale color and/or opacity maps used to include current data range
+# Definir coloração inicial para SIEQ_NOEU (stress)
+pvs.ColorBy(plateresrmedDisplay, ('POINTS', 'reslin__SIEQ_NOEU', 'Magnitude'))
 plateresrmedDisplay.RescaleTransferFunctionToDataRange(True, False)
-
-# show color bar/color legend
 plateresrmedDisplay.SetScalarBarVisibility(renderView1, True)
 
-# get color transfer function/color map for 'reslin__SIEQ_NOEU'
-reslin__SIEQ_NOEULUT = GetColorTransferFunction('reslin__SIEQ_NOEU')
+# Configurar barra de cores para SIEQ_NOEU
+scalarBar = pvs.GetScalarBar(plateresrmedDisplay.LookupTable, renderView1)
+scalarBar.TitleFontSize = 10
+scalarBar.LabelFontSize = 8
 
-# get opacity transfer function/opacity map for 'reslin__SIEQ_NOEU'
-reslin__SIEQ_NOEUPWF = GetOpacityTransferFunction('reslin__SIEQ_NOEU')
-
-# get 2D transfer function for 'reslin__SIEQ_NOEU'
-reslin__SIEQ_NOEUTF2D = GetTransferFunction2D('reslin__SIEQ_NOEU')
-
-# get layout
-# layout = GetLayout()
-
-# layout/tab size in pixels
-#layout.SetSize(1508, 649)
-
-# current camera placement for renderView1
-renderView1.CameraPosition = [-838.2954601598269, 510.0627204941391, 789.9280527608555]
+# Definir posição da câmera
+renderView1.CameraPosition = [-838.295, 510.063, 789.928]
 renderView1.CameraFocalPoint = [250.0, 250.0, 6.0]
-renderView1.CameraViewUp = [0.5908781622391416, 0.04448910644042894, 0.80553318789298]
-renderView1.CameraParallelScale = 353.6042986164054
+renderView1.CameraViewUp = [0.5909, 0.0445, 0.8055]
+renderView1.CameraParallelScale = 353.604
 
-UpdatePipeline(time=0.0, proxy=plateresrmed)
-Render()
-Show(plateresrmed)
+# Salvar captura de tela para stress
+screenshot_path = "D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/stress1.png"
+pvs.SaveScreenshot(screenshot_path, renderView1, ImageResolution=[1508, 649])
 
-# save screenshot
-SaveScreenshot('D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/stress1.png', renderView1, ImageResolution=[1508, 649])
-
-# change representation type
+# Alterar representação e salvar nova imagem
 plateresrmedDisplay.SetRepresentationType('Surface With Edges')
+screenshot_path2 = "D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/stress2.png"
+pvs.SaveScreenshot(screenshot_path2, renderView1, ImageResolution=[1508, 649])
 
-# layout/tab size in pixels
-# layout1.SetSize(1508, 649)
+# Ocultar barra de cores SIEQ_NOEU antes de imagens DEPL
+pvs.HideScalarBarIfNotNeeded(plateresrmedDisplay.LookupTable, renderView1)
 
-# current camera placement for renderView1
-renderView1.CameraPosition = [-838.2954601598269, 510.0627204941391, 789.9280527608555]
-renderView1.CameraFocalPoint = [250.0, 250.0, 6.0]
-renderView1.CameraViewUp = [0.5908781622391416, 0.04448910644042894, 0.80553318789298]
-renderView1.CameraParallelScale = 353.6042986164054
+##############################################################################################
 
-# save screenshot
-SaveScreenshot('D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/stress2.png', renderView1, ImageResolution=[1508, 649])
+# Alterar coloração para DEPL
+pvs.ColorBy(plateresrmedDisplay2, ('POINTS', 'reslin__DEPL', 'Magnitude'))
+plateresrmedDisplay2.RescaleTransferFunctionToDataRange(True, False)
+plateresrmedDisplay2.SetScalarBarVisibility(renderView2, True)  # Exibir a barra de cores correta para DEPL
 
-# set scalar coloring
-ColorBy(plateresrmedDisplay, ('POINTS', 'reslin__DEPL', 'Magnitude'))
+# Configurar barra de cores para DEPL
+scalarBar2 = pvs.GetScalarBar(plateresrmedDisplay2.LookupTable, renderView2)  # Alteração aqui
+scalarBar2.TitleFontSize = 10
+scalarBar2.LabelFontSize = 8
 
-# Hide the scalar bar for this color map if no visible data is colored by it.
-HideScalarBarIfNotNeeded(reslin__SIEQ_NOEULUT, renderView1)
+# Definir posição da câmera
+renderView2.CameraPosition = [-838.295, 510.063, 789.928]
+renderView2.CameraFocalPoint = [250.0, 250.0, 6.0]
+renderView2.CameraViewUp = [0.5909, 0.0445, 0.8055]
+renderView2.CameraParallelScale = 353.604
 
-# rescale color and/or opacity maps used to include current data range
-plateresrmedDisplay.RescaleTransferFunctionToDataRange(True, False)
+# Salvar capturas de tela para deslocamento (DEPL)
+screenshot_path3 = "D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/DEPL1.png"
+pvs.SaveScreenshot(screenshot_path3, renderView2, ImageResolution=[1508, 649])
 
-# show color bar/color legend
-plateresrmedDisplay.SetScalarBarVisibility(renderView1, True)
+plateresrmedDisplay2.SetRepresentationType('Surface')
+screenshot_path4 = "D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/DEPL2.png"
+pvs.SaveScreenshot(screenshot_path4, renderView2, ImageResolution=[1508, 649])
 
-# get color transfer function/color map for 'reslin__DEPL'
-reslin__DEPLLUT = GetColorTransferFunction('reslin__DEPL')
-
-# get opacity transfer function/opacity map for 'reslin__DEPL'
-reslin__DEPLPWF = GetOpacityTransferFunction('reslin__DEPL')
-
-# get 2D transfer function for 'reslin__DEPL'
-reslin__DEPLTF2D = GetTransferFunction2D('reslin__DEPL')
-
-# layout/tab size in pixels
-# layout1.SetSize(1508, 649)
-
-# current camera placement for renderView1
-renderView1.CameraPosition = [-838.2954601598269, 510.0627204941391, 789.9280527608555]
-renderView1.CameraFocalPoint = [250.0, 250.0, 6.0]
-renderView1.CameraViewUp = [0.5908781622391416, 0.04448910644042894, 0.80553318789298]
-renderView1.CameraParallelScale = 353.6042986164054
-
-# save screenshot
-SaveScreenshot('D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/DEPL1.png', renderView1, ImageResolution=[1508, 649])
-
-# change representation type
-plateresrmedDisplay.SetRepresentationType('Surface')
-
-# layout/tab size in pixels
-# layout1.SetSize(1508, 649)
-
-# current camera placement for renderView1
-renderView1.CameraPosition = [-838.2954601598269, 510.0627204941391, 789.9280527608555]
-renderView1.CameraFocalPoint = [250.0, 250.0, 6.0]
-renderView1.CameraViewUp = [0.5908781622391416, 0.04448910644042894, 0.80553318789298]
-renderView1.CameraParallelScale = 353.6042986164054
-
-# save screenshot
-SaveScreenshot('D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/DEPL2.png', renderView1, ImageResolution=[1508, 649])
-
-#### saving camera placements for all active views
-
-# current camera placement for renderView1
-renderView1.CameraPosition = [-838.2954601598269, 510.0627204941391, 789.9280527608555]
-renderView1.CameraFocalPoint = [250.0, 250.0, 6.0]
-renderView1.CameraViewUp = [0.5908781622391416, 0.04448910644042894, 0.80553318789298]
-renderView1.CameraParallelScale = 353.6042986164054
+# Atualizar pipeline
+pvs.UpdatePipeline(time=0.0, proxy=plateresrmed)
+pvs.Render()
