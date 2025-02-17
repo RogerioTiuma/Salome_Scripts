@@ -22,14 +22,22 @@ plateresrmed.FieldsStatus = [
     'TS0/00000001/ComSup0/reslin__SIEQ_NOEU@@][@@P1'
 ]
 
-# Criar visualizações
-renderView1 = pvs.GetActiveViewOrCreate('RenderView')
+# Limpar as visualizações anteriores, se existirem
+def cleanup():
+    for view in pvs.GetViews():
+        pvs.Delete(view)
+        
+cleanup()  # Chama a função para garantir que as visualizações anteriores sejam removidas
+
+# Criar visualização
+renderView1 = pvs.CreateView('RenderView')
 plateresrmedDisplay = pvs.Show(plateresrmed, renderView1)
 
-renderView2 = pvs.CreateView('RenderView')  # Use CreateView para garantir a criação de uma nova visualização
+# Criar segunda visualização
+renderView2 = pvs.CreateView('RenderView')
 plateresrmedDisplay2 = pvs.Show(plateresrmed, renderView2)
 
-# Ajustar visualização 1 (para stress)
+# Ajustar visualização
 renderView1.ResetCamera(False)
 renderView1.Update()
 
@@ -69,7 +77,7 @@ plateresrmedDisplay2.RescaleTransferFunctionToDataRange(True, False)
 plateresrmedDisplay2.SetScalarBarVisibility(renderView2, True)  # Exibir a barra de cores correta para DEPL
 
 # Configurar barra de cores para DEPL
-scalarBar2 = pvs.GetScalarBar(plateresrmedDisplay2.LookupTable, renderView2)  # Alteração aqui
+scalarBar2 = pvs.GetScalarBar(plateresrmedDisplay2.LookupTable, renderView2)
 scalarBar2.TitleFontSize = 10
 scalarBar2.LabelFontSize = 8
 
@@ -83,7 +91,7 @@ renderView2.CameraParallelScale = 353.604
 screenshot_path3 = "D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/DEPL1.png"
 pvs.SaveScreenshot(screenshot_path3, renderView2, ImageResolution=[1508, 649])
 
-plateresrmedDisplay2.SetRepresentationType('Surface')
+plateresrmedDisplay2.SetRepresentationType('Surface With Edges')
 screenshot_path4 = "D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/DEPL2.png"
 pvs.SaveScreenshot(screenshot_path4, renderView2, ImageResolution=[1508, 649])
 
