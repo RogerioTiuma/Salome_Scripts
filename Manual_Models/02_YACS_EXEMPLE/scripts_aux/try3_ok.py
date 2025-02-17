@@ -52,7 +52,7 @@ reslin__SIEQ_NOEUPWF = GetOpacityTransferFunction('reslin__SIEQ_NOEU')
 reslin__SIEQ_NOEUTF2D = GetTransferFunction2D('reslin__SIEQ_NOEU')
 
 # get layout
-#layout = GetLayout()
+# layout = GetLayout()
 
 # layout/tab size in pixels
 #layout.SetSize(1508, 649)
