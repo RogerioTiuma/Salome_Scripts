@@ -177,27 +177,22 @@ smesh.SetName(zmax_1, 'zmax')
       <inport name="Box_1" type="pyobj"/>
       <inport name="meshSize" type="double"/>
    </inline>
-   <inline name="ASTKcall">
-      <script><code><![CDATA[import subprocess
-
-as_run_path = r"D:\SALOME-9.10.0\v2023\bin\as_run"  # Caminho do as_run
-job_file = r"D:\00_MODELOS\GITHUB\Salome_Scripts\Manual_Models\02_YACS_EXEMPLE\export"
-
-cmd = f'"{as_run_path}" "{job_file}"'
-subprocess.run(cmd, shell=True)
-]]></code></script>
-      <load container="DefaultContainer"/>
-   </inline>
    <datanode name="matDataIn">
-      <parameter name="E" type="double">
-         <value><double>200000</double></value>
-      </parameter>
       <parameter name="NU" type="double">
          <value><double>0.28</double></value>
       </parameter>
+      <parameter name="E" type="dblevec">
+         <value><array><data>
+<value><double>200000</double></value>
+<value><double>220000</double></value>
+<value><double>250000</double></value>
+</data></array></value>
+      </parameter>
    </datanode>
-   <inline name="Astercomm">
-      <script><code><![CDATA[import os,sys
+   <forloop name="ForLoop7" nsteps="3">
+      <bloc name="Bloc8">
+         <inline name="Astercomm">
+            <script><code><![CDATA[import os,sys
 
 commFilePath = r'D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/RunCase_1_Stage_1.comm'
 
@@ -213,7 +208,7 @@ model = AFFE_MODELE(identifier='1:1',
                             TOUT='OUI'),
                     MAILLAGE=mesh)
 mater = DEFI_MATERIAU(identifier='2:1', 
-                         ELAS=_F(E="""+str(E)+""",
+                         ELAS=_F(E="""+str(E[index])+""",
                             NU="""+str(NU)+"""))
                                 
 fieldmat = AFFE_MATERIAU(identifier='3:1',
@@ -258,24 +253,65 @@ commFile = open(commFilePath,'w')
 commFile.write(commString)
 commFile.close()
 ]]></code></script>
-      <inport name="E" type="double"/>
-      <inport name="NU" type="double"/>
-   </inline>
-   <inline name="ParaVis">
-      <script><code><![CDATA[#!/usr/bin/env python
+            <inport name="NU" type="double"/>
+            <inport name="E" type="dblevec"/>
+            <inport name="index" type="int"/>
+         </inline>
+         <inline name="ASTKcall">
+            <script><code><![CDATA[import subprocess
+
+as_run_path = r"D:\SALOME-9.10.0\v2023\bin\as_run"  # Caminho do as_run
+job_file = r"D:\00_MODELOS\GITHUB\Salome_Scripts\Manual_Models\02_YACS_EXEMPLE\export"
+
+cmd = f'"{as_run_path}" "{job_file}"'
+subprocess.run(cmd, shell=True)
+]]></code></script>
+         </inline>
+         <inline name="Resul_csv">
+            <script><code><![CDATA[import os, sys, re
+import pandas as pd
+
+pathToRes = r"D:\00_MODELOS\GITHUB\Salome_Scripts\Manual_Models\02_YACS_EXEMPLE\plate-res" + str(index) + ".txt"  
+pathToCsv = r"D:\00_MODELOS\GITHUB\Salome_Scripts\Manual_Models\02_YACS_EXEMPLE\mydata2" + str(index) + ".csv"
+
+# Abrir e ler o arquivo .txt
+with open(pathToRes, 'r') as myfile:
+    content = myfile.read()
+
+# Definir expressÃ£o regular
+dispRegex = re.compile(r'LA VALEUR (MAX|MIN)IMALE DE (DX|DY|DZ) {2,}EST {1,}(-?\d.\d{14}E-?\+?\d\d) ')
+mo = dispRegex.findall(content)
+
+# Exibir os resultados da regex
+print(mo)
+
+# Criar DataFrame com os resultados da regex
+mydata = pd.DataFrame(mo, columns=["MIN/MAX", "Component", "Value"])
+
+# Salvar DataFrame como CSV
+mydata.to_csv(pathToCsv, index=False)
+
+mydata = pd.DataFrame(mo, columns=["MIN/MAX", "Component", "Value"])
+
+mydata.to_csv(pathToCsv, index=False)
+]]></code></script>
+            <inport name="index" type="int"/>
+         </inline>
+         <inline name="ParaVis">
+            <script><code><![CDATA[#!/usr/bin/env python
 
 import sys
 sys.path.append("D:/SALOME-9.10.0/W64/ParaView/bin/Lib/site-packages")
 import paraview.simple as pvs
 
-# Desativar reset automÃÂ¡tico da cÃÂ¢mera
+# Desativar reset automÃÂÃÂÃÂÃÂ¡tico da cÃÂÃÂÃÂÃÂ¢mera
 pvs._DisableFirstRenderCameraReset()
 
 # Caminho do arquivo MED
-med_file_path = "D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/plate-res.rmed"
+med_file_path = "D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/plate-res"+str(index)+".rmed"
 
 # Criar um novo leitor MED
-plateresrmed = pvs.MEDReader(registrationName='plate-res.rmed', FileNames=[med_file_path])
+plateresrmed = pvs.MEDReader(registrationName='plate-res"+str(index)+".rmed', FileNames=[med_file_path])
 
 # Definir campos a serem lidos
 plateresrmed.FieldsStatus = [
@@ -286,26 +322,26 @@ plateresrmed.FieldsStatus = [
     'TS0/00000001/ComSup0/reslin__SIEQ_NOEU@@][@@P1'
 ]
 
-# Limpar as visualizaÃÂ§ÃÂµes anteriores, se existirem
+# Limpar as visualizaÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂµes anteriores, se existirem
 def cleanup():
     for view in pvs.GetViews():
         pvs.Delete(view)
         
-cleanup()  # Chama a funÃÂ§ÃÂ£o para garantir que as visualizaÃÂ§ÃÂµes anteriores sejam removidas
+cleanup()  # Chama a funcoes anteriores sejam removidas
 
-# Criar visualizaÃÂ§ÃÂ£o
+# Criar visualizaÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ£o
 renderView1 = pvs.CreateView('RenderView')
 plateresrmedDisplay = pvs.Show(plateresrmed, renderView1)
 
-# Criar segunda visualizaÃÂ§ÃÂ£o
+# Criar segunda visualizaÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ£o
 renderView2 = pvs.CreateView('RenderView')
 plateresrmedDisplay2 = pvs.Show(plateresrmed, renderView2)
 
-# Ajustar visualizaÃÂ§ÃÂ£o
+# Ajustar visualizaÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ£o
 renderView1.ResetCamera(False)
 renderView1.Update()
 
-# Definir coloraÃÂ§ÃÂ£o inicial para SIEQ_NOEU (stress)
+# Definir coloraÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ£o inicial para SIEQ_NOEU (stress)
 pvs.ColorBy(plateresrmedDisplay, ('POINTS', 'reslin__SIEQ_NOEU', 'Magnitude'))
 plateresrmedDisplay.RescaleTransferFunctionToDataRange(True, False)
 plateresrmedDisplay.SetScalarBarVisibility(renderView1, True)
@@ -315,19 +351,19 @@ scalarBar = pvs.GetScalarBar(plateresrmedDisplay.LookupTable, renderView1)
 scalarBar.TitleFontSize = 10
 scalarBar.LabelFontSize = 8
 
-# Definir posiÃÂ§ÃÂ£o da cÃÂ¢mera
+# Definir posiÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ£o da cÃÂÃÂÃÂÃÂ¢mera
 renderView1.CameraPosition = [-838.295, 510.063, 789.928]
 renderView1.CameraFocalPoint = [250.0, 250.0, 6.0]
 renderView1.CameraViewUp = [0.5909, 0.0445, 0.8055]
 renderView1.CameraParallelScale = 353.604
 
 # Salvar captura de tela para stress
-screenshot_path = "D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/stress1.png"
+screenshot_path = "D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/stress1_"+str(index)+".png"
 pvs.SaveScreenshot(screenshot_path, renderView1, ImageResolution=[1508, 649])
 
-# Alterar representaÃÂ§ÃÂ£o e salvar nova imagem
+# Alterar representaÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ£o e salvar nova imagem
 plateresrmedDisplay.SetRepresentationType('Surface With Edges')
-screenshot_path2 = "D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/stress2.png"
+screenshot_path2 = "D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/stress2_"+str(index)+".png"
 pvs.SaveScreenshot(screenshot_path2, renderView1, ImageResolution=[1508, 649])
 
 # Ocultar barra de cores SIEQ_NOEU antes de imagens DEPL
@@ -335,7 +371,7 @@ pvs.HideScalarBarIfNotNeeded(plateresrmedDisplay.LookupTable, renderView1)
 
 ##############################################################################################
 
-# Alterar coloraÃÂ§ÃÂ£o para DEPL
+# Alterar coloraÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ£o para DEPL
 pvs.ColorBy(plateresrmedDisplay2, ('POINTS', 'reslin__DEPL', 'Magnitude'))
 plateresrmedDisplay2.RescaleTransferFunctionToDataRange(True, False)
 plateresrmedDisplay2.SetScalarBarVisibility(renderView2, True)  # Exibir a barra de cores correta para DEPL
@@ -345,55 +381,51 @@ scalarBar2 = pvs.GetScalarBar(plateresrmedDisplay2.LookupTable, renderView2)
 scalarBar2.TitleFontSize = 10
 scalarBar2.LabelFontSize = 8
 
-# Definir posiÃÂ§ÃÂ£o da cÃÂ¢mera
+# Definir posiÃÂÃÂÃÂÃÂ§ÃÂÃÂÃÂÃÂ£o da cÃÂÃÂÃÂÃÂ¢mera
 renderView2.CameraPosition = [-838.295, 510.063, 789.928]
 renderView2.CameraFocalPoint = [250.0, 250.0, 6.0]
 renderView2.CameraViewUp = [0.5909, 0.0445, 0.8055]
 renderView2.CameraParallelScale = 353.604
 
 # Salvar capturas de tela para deslocamento (DEPL)
-screenshot_path3 = "D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/DEPL1.png"
+screenshot_path3 = "D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/DEPL1_"+str(index)+".png"
 pvs.SaveScreenshot(screenshot_path3, renderView2, ImageResolution=[1508, 649])
 
 plateresrmedDisplay2.SetRepresentationType('Surface With Edges')
-screenshot_path4 = "D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/DEPL2.png"
+screenshot_path4 = "D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/DEPL2_"+str(index)+".png"
 pvs.SaveScreenshot(screenshot_path4, renderView2, ImageResolution=[1508, 649])
 
 # Atualizar pipeline
 pvs.UpdatePipeline(time=0.0, proxy=plateresrmed)
 pvs.Render()
 ]]></code></script>
-      <load container="DefaultContainer"/>
-   </inline>
-   <inline name="Resul_csv">
-      <script><code><![CDATA[import os, sys, re
-import pandas as pd
+            <inport name="index" type="int"/>
+         </inline>
+         <inline name="renameRmed">
+            <script><code><![CDATA[import os 
+os.rename(
+    'D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/plate-res.rmed',
+    "D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/plate-res" + str(index) + ".rmed"
+)
 
-pathToRes = r"D:\00_MODELOS\GITHUB\Salome_Scripts\Manual_Models\02_YACS_EXEMPLE\plate-res.txt"  
-pathToCsv = r"D:\00_MODELOS\GITHUB\Salome_Scripts\Manual_Models\02_YACS_EXEMPLE\mydata2.csv"
-
-myfile = open(pathToRes, 'r')
-content = myfile.read()
-
-dispRegex = re.compile(r'LA VALEUR (MAX|MIN)IMALE DE (DX|DY|DZ) {2,}EST {1,}(-?\d.\d{14}E-?\+?\d\d) ')
-mo = dispRegex.findall(content)
-
-print(mo)
-
-mydata = pd.DataFrame(mo, columns=["MIN/MAX", "Component", "Value"])
-
-mydata.to_csv(pathToCsv, index=False)
+os.rename(
+    'D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/plate-res.txt',
+    "D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/plate-res" + str(index) + ".txt"
+)
 ]]></code></script>
-      <load container="DefaultContainer"/>
-   </inline>
+            <inport name="index" type="int"/>
+         </inline>
+         <control> <fromnode>Astercomm</fromnode> <tonode>ASTKcall</tonode> </control>
+         <control> <fromnode>ASTKcall</fromnode> <tonode>renameRmed</tonode> </control>
+         <control> <fromnode>renameRmed</fromnode> <tonode>Resul_csv</tonode> </control>
+         <control> <fromnode>renameRmed</fromnode> <tonode>ParaVis</tonode> </control>
+      </bloc>
+   </forloop>
    <control> <fromnode>DataIn0</fromnode> <tonode>GeomNode</tonode> </control>
    <control> <fromnode>DataIn0</fromnode> <tonode>MeshNode</tonode> </control>
    <control> <fromnode>GeomNode</fromnode> <tonode>MeshNode</tonode> </control>
    <control> <fromnode>MeshNode</fromnode> <tonode>matDataIn</tonode> </control>
-   <control> <fromnode>ASTKcall</fromnode> <tonode>ParaVis</tonode> </control>
-   <control> <fromnode>ASTKcall</fromnode> <tonode>Resul_csv</tonode> </control>
-   <control> <fromnode>matDataIn</fromnode> <tonode>Astercomm</tonode> </control>
-   <control> <fromnode>Astercomm</fromnode> <tonode>ASTKcall</tonode> </control>
+   <control> <fromnode>matDataIn</fromnode> <tonode>ForLoop7</tonode> </control>
    <datalink control="false">
       <fromnode>DataIn0</fromnode> <fromport>a</fromport>
       <tonode>GeomNode</tonode> <toport>a</toport>
@@ -447,20 +479,43 @@ mydata.to_csv(pathToCsv, index=False)
       <tonode>MeshNode</tonode> <toport>Box_1</toport>
    </datalink>
    <datalink control="false">
-      <fromnode>matDataIn</fromnode> <fromport>E</fromport>
-      <tonode>Astercomm</tonode> <toport>E</toport>
+      <fromnode>matDataIn</fromnode> <fromport>NU</fromport>
+      <tonode>ForLoop7.Bloc8.Astercomm</tonode> <toport>NU</toport>
    </datalink>
    <datalink control="false">
-      <fromnode>matDataIn</fromnode> <fromport>NU</fromport>
-      <tonode>Astercomm</tonode> <toport>NU</toport>
+      <fromnode>matDataIn</fromnode> <fromport>E</fromport>
+      <tonode>ForLoop7.Bloc8.Astercomm</tonode> <toport>E</toport>
    </datalink>
+   <datalink control="false">
+      <fromnode>ForLoop7</fromnode> <fromport>index</fromport>
+      <tonode>ForLoop7.Bloc8.Astercomm</tonode> <toport>index</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>ForLoop7</fromnode> <fromport>index</fromport>
+      <tonode>ForLoop7.Bloc8.Resul_csv</tonode> <toport>index</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>ForLoop7</fromnode> <fromport>index</fromport>
+      <tonode>ForLoop7.Bloc8.renameRmed</tonode> <toport>index</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>ForLoop7</fromnode> <fromport>index</fromport>
+      <tonode>ForLoop7.Bloc8.ParaVis</tonode> <toport>index</toport>
+   </datalink>
+   <parameter>
+      <tonode>ForLoop7</tonode><toport>nsteps</toport>
+      <value><int>3</int></value>
+   </parameter>
+   <presentation name="ForLoop7" x="859" y="51" width="631.44" height="445.617" expanded="1" expx="859" expy="51" expWidth="631.44" expHeight="445.617" shownState="0"/>
+   <presentation name="ForLoop7.Bloc8" x="6" y="98" width="621.44" height="343.617" expanded="1" expx="6" expy="98" expWidth="621.44" expHeight="343.617" shownState="0"/>
+   <presentation name="DataIn0" x="6" y="40.5" width="158" height="144" expanded="1" expx="6" expy="40.5" expWidth="158" expHeight="144" shownState="0"/>
    <presentation name="matDataIn" x="621.694" y="78.1698" width="158" height="90" expanded="1" expx="621.694" expy="78.1698" expWidth="158" expHeight="90" shownState="0"/>
-   <presentation name="DataIn0" x="6" y="35" width="158" height="144" expanded="1" expx="6" expy="35" expWidth="158" expHeight="144" shownState="0"/>
    <presentation name="GeomNode" x="299.216" y="128.493" width="158" height="279" expanded="1" expx="299.216" expy="128.493" expWidth="158" expHeight="279" shownState="0"/>
-   <presentation name="Resul_csv" x="1103.95" y="183.494" width="158" height="36" expanded="1" expx="1103.95" expy="183.494" expWidth="158" expHeight="36" shownState="0"/>
-   <presentation name="ParaVis" x="1083.05" y="294.685" width="158" height="36" expanded="1" expx="1083.05" expy="294.685" expWidth="158" expHeight="36" shownState="0"/>
-   <presentation name="MeshNode" x="591.675" y="192.84" width="158" height="306" expanded="1" expx="591.675" expy="192.84" expWidth="158" expHeight="306" shownState="0"/>
-   <presentation name="ASTKcall" x="855.603" y="244.759" width="158" height="36" expanded="0" expx="855.603" expy="244.759" expWidth="158" expHeight="36" shownState="1"/>
-   <presentation name="Astercomm" x="815.897" y="82.6511" width="158" height="90" expanded="1" expx="815.897" expy="82.6511" expWidth="158" expHeight="90" shownState="0"/>
-   <presentation name="__ROOT__" x="0" y="0" width="1265.95" height="502.84" expanded="1" expx="0" expy="0" expWidth="1265.95" expHeight="502.84" shownState="0"/>
+   <presentation name="ForLoop7.Bloc8.ParaVis" x="459.44" y="276.617" width="158" height="63" expanded="1" expx="459.44" expy="276.617" expWidth="158" expHeight="63" shownState="0"/>
+   <presentation name="ForLoop7.Bloc8.ASTKcall" x="113.262" y="151.5" width="158" height="36" expanded="0" expx="113.262" expy="151.5" expWidth="158" expHeight="36" shownState="1"/>
+   <presentation name="ForLoop7.Bloc8.Astercomm" x="6" y="34" width="158" height="117" expanded="1" expx="6" expy="34" expWidth="158" expHeight="117" shownState="0"/>
+   <presentation name="ForLoop7.Bloc8.renameRmed" x="151.323" y="232.763" width="158" height="63" expanded="1" expx="151.323" expy="232.763" expWidth="158" expHeight="63" shownState="0"/>
+   <presentation name="MeshNode" x="591.675" y="276.67" width="158" height="306" expanded="1" expx="591.675" expy="276.67" expWidth="158" expHeight="306" shownState="0"/>
+   <presentation name="ForLoop7.Bloc8.Resul_csv" x="433.533" y="61.2702" width="158" height="63" expanded="1" expx="433.533" expy="61.2702" expWidth="158" expHeight="63" shownState="0"/>
+   <presentation name="__ROOT__" x="0" y="0" width="1494.44" height="586.67" expanded="1" expx="0" expy="0" expWidth="1494.44" expHeight="586.67" shownState="0"/>
 </proc>

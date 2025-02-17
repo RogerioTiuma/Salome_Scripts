@@ -10,7 +10,7 @@ model = AFFE_MODELE(identifier='1:1',
                             TOUT='OUI'),
                     MAILLAGE=mesh)
 mater = DEFI_MATERIAU(identifier='2:1', 
-                         ELAS=_F(E=200000.0,
+                         ELAS=_F(E=250000.0,
                             NU=0.28))
                                 
 fieldmat = AFFE_MATERIAU(identifier='3:1',

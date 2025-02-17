@@ -1,0 +1,17 @@
+
+ --------------------------------------------------------------------------------
+ CONCEPT   00000006             DE TYPE  EVOL_ELAS                              
+
+
+ ======>
+
+ ------>
+ CHAMP AUX NOEUDS DE NOM SYMBOLIQUE  DEPL                                        
+ NUMERO D'ORDRE: 1 INST:   0.00000000000000E+00                                  
+ 
+ LA VALEUR MAXIMALE DE DX       EST  4.51194665163251E-01 EN    1 NOEUD(S) : N6      
+ LA VALEUR MAXIMALE DE DY       EST  6.58911912686717E-02 EN    1 NOEUD(S) : N5      
+ LA VALEUR MAXIMALE DE DZ       EST  2.88108766796990E-03 EN    1 NOEUD(S) : N173    
+ LA VALEUR MINIMALE DE DX       EST -1.12445669172356E-18 EN    1 NOEUD(S) : N56     
+ LA VALEUR MINIMALE DE DY       EST -6.58911912686492E-02 EN    1 NOEUD(S) : N8      
+ LA VALEUR MINIMALE DE DZ       EST -2.88108766797013E-03 EN    1 NOEUD(S) : N296    
