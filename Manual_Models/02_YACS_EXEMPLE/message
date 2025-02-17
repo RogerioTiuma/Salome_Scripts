@@ -13,7 +13,7 @@ Ouverture en écriture du fichier ./vola.1
                           révision 5cbe49dc7a4d - branche 'windows-draft'                           
                                    Copyright EDF R&D 1991 - 2025                                    
                                                                                                     
-                              Exécution du : Mon Feb 17 03:40:07 2025                               
+                              Exécution du : Mon Feb 17 10:43:23 2025                               
                                         Nom de la machine :                                         
                                              RogerioPC                                              
                                         Architecture : 64bit                                        
@@ -43,7 +43,7 @@ Ouverture en écriture du fichier ./glob.1
 
 Ouverture en écriture du fichier ./vola.1
 
-Ouverture en lecture du fichier C:\v2023\16.5\lib\aster/elem.1
+Ouverture en lecture du fichier D:\SALOME-9.10.0\v2023\16.5\lib\aster/elem.1
 
 Nom de la base                          :  ELEMBASE
      Créée avec la version                   : 
@@ -59,7 +59,7 @@ Nom de la base                          :  ELEMBASE
 répertoire            :  300
      Pourcentage d'utilisation du répertoire :  41 %
 
-Ouverture en lecture du fichier C:\v2023\16.5\lib\aster/elem.1
+Ouverture en lecture du fichier D:\SALOME-9.10.0\v2023\16.5\lib\aster/elem.1
 
 Nom de la base                          :  ELEMBASE
      Nombre d'enregistrements utilisés       : 
@@ -86,11 +86,11 @@ Fin de lecture (durée  0.000000  s.)
 
                       Mémoire limite pour l'allocation dynamique : 2560.00 Mo                       
                               ajouté à l'initialisation du processus :                              
-                                             272.28 Mo                                              
-                               Limite cible du processus : 2832.28 Mo                               
+                                             275.66 Mo                                              
+                               Limite cible du processus : 2835.66 Mo                               
                          Taille limite des fichiers d'échange : 2048.00 Go                          
-# Mémoire (Mo) :   272.28 /   264.85 /   208.39 /   184.66 (VmPeak / VmSize / Optimum / Minimum)
-# Fin commande #0001   user+syst:        0.12s (syst:        0.19s, elaps:        0.00s)
+# Mémoire (Mo) :   275.66 /   268.23 /   208.39 /   184.66 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0001   user+syst:        0.19s (syst:        0.16s, elaps:        0.00s)
 # ----------------------------------------------------------------------------------------------
 
 .. _stg1_cmd0:1
@@ -124,8 +124,8 @@ NOMBRE DE GROUPES DE MAILLES               7
 Vérification du maillage.
 
 # Résultat commande #0002 (LIRE_MAILLAGE): mesh ('<00000001>') de type <Mesh>
-# Mémoire (Mo) :   379.19 /   315.51 /   217.70 /   186.74 (VmPeak / VmSize / Optimum / Minimum)
-# Fin commande #0002   user+syst:        1.61s (syst:        0.05s, elaps:        0.00s)
+# Mémoire (Mo) :   382.13 /   317.82 /   217.70 /   186.74 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0002   user+syst:        2.53s (syst:        0.06s, elaps:        0.00s)
 # ----------------------------------------------------------------------------------------------
 
 .. _stg1_cmd1:1
@@ -147,10 +147,10 @@ Modélisation     Formulation      Type maille  Élément fini     Nombre
 _                _                SEG2         MECA_ARETE2      1012
 _                _                QUAD4        MECA_FACE4       32750
 3D               _                HEXA8        MECA_HEXA8       46875
-#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.12      0.00      1.00
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.21      0.00      1.00
 # Résultat commande #0003 (AFFE_MODELE): model ('<00000002>') de type <Model>
-# Mémoire (Mo) :   379.19 /   323.50 /   219.85 /   212.24 (VmPeak / VmSize / Optimum / Minimum)
-# Fin commande #0003   user+syst:        0.45s (syst:        0.00s, elaps:        0.00s)
+# Mémoire (Mo) :   382.13 /   326.79 /   219.85 /   212.24 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0003   user+syst:        0.80s (syst:        0.00s, elaps:        0.00s)
 # ----------------------------------------------------------------------------------------------
 
 .. _stg1_cmd2:1
@@ -164,8 +164,8 @@ mater = DEFI_MATERIAU(ELAS=_F(B_ENDOGE=0.0,
                       INFO=1)
 
 # Résultat commande #0004 (DEFI_MATERIAU): mater ('<00000003>') de type <Material>
-# Mémoire (Mo) :   379.19 /   323.59 /   219.85 /   212.24 (VmPeak / VmSize / Optimum / Minimum)
-# Fin commande #0004   user+syst:        0.00s (syst:        0.00s, elaps:        0.00s)
+# Mémoire (Mo) :   382.13 /   326.88 /   219.85 /   212.24 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0004   user+syst:        0.02s (syst:        0.00s, elaps:        0.00s)
 # ----------------------------------------------------------------------------------------------
 
 .. _stg1_cmd3:1
@@ -178,8 +178,8 @@ fieldmat = AFFE_MATERIAU(AFFE=_F(MATER=mater,
                          MODELE=model)
 
 # Résultat commande #0005 (AFFE_MATERIAU): fieldmat ('<00000004>') de type <MaterialField>
-# Mémoire (Mo) :   379.19 /   323.79 /   219.85 /   212.24 (VmPeak / VmSize / Optimum / Minimum)
-# Fin commande #0005   user+syst:        0.02s (syst:        0.00s, elaps:        0.00s)
+# Mémoire (Mo) :   382.13 /   327.08 /   219.85 /   212.24 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0005   user+syst:        0.00s (syst:        0.00s, elaps:        0.00s)
 # ----------------------------------------------------------------------------------------------
 
 .. _stg1_cmd4:1
@@ -196,8 +196,8 @@ load = AFFE_CHAR_MECA(DDL_IMPO=_F(BLOCAGE='DEPLACEMENT',
                       VERI_NORM='OUI')
 
 # Résultat commande #0006 (AFFE_CHAR_MECA): load ('<00000005>') de type <MechanicalLoadReal>
-# Mémoire (Mo) :   379.19 /   325.89 /   228.23 /   212.24 (VmPeak / VmSize / Optimum / Minimum)
-# Fin commande #0006   user+syst:        0.05s (syst:        0.02s, elaps:        0.00s)
+# Mémoire (Mo) :   382.13 /   331.95 /   228.23 /   212.24 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0006   user+syst:        0.16s (syst:        0.00s, elaps:        0.00s)
 # ----------------------------------------------------------------------------------------------
 
 .. _stg1_cmd5:1
@@ -240,10 +240,10 @@ symétrique et 12748032 termes non nuls si elle n'est pas symétrique.
   Soit un taux de remplissage
 de   0.034 %.
 Champ stocké <DEPL> à l'instant  0.000000000000e+00 pour le numéro d'ordre 1
-#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      1.28      0.00      1.00
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      1.69      0.00      2.00
 # Résultat commande #0007 (MECA_STATIQUE): reslin ('<00000006>') de type <ElasticResult>
-# Mémoire (Mo) :  1225.49 /   364.33 /   418.76 /   345.98 (VmPeak / VmSize / Optimum / Minimum)
-# Fin commande #0007   user+syst:       15.02s (syst:        1.84s, elaps:        0.00s)
+# Mémoire (Mo) :  1228.93 /   367.61 /   418.76 /   345.98 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0007   user+syst:       17.44s (syst:        1.53s, elaps:        0.00s)
 # ----------------------------------------------------------------------------------------------
 
 .. _stg1_cmd6:1
@@ -257,10 +257,10 @@ reslin = CALC_CHAMP(CRITERE='RELATIF',
                     RESULTAT=reslin,
                     reuse=reslin)
 
-#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      1.20      0.00      1.00
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      1.65      0.00      2.00
 # Résultat commande #0009 (CALC_CHAMP): reslin ('<00000006>') de type <ElasticResult>
-# Mémoire (Mo) :  1225.49 /   513.82 /   512.90 /   345.98 (VmPeak / VmSize / Optimum / Minimum)
-# Fin commande #0009   user+syst:        2.09s (syst:        0.19s, elaps:        0.00s)
+# Mémoire (Mo) :  1228.93 /   516.72 /   512.90 /   345.98 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0009   user+syst:        3.11s (syst:        0.02s, elaps:        0.00s)
 # ----------------------------------------------------------------------------------------------
 
 .. _stg1_cmd7:1
@@ -279,8 +279,8 @@ IMPR_RESU(FICHIER_UNIQUE='OUI',
 
 Création du fichier au format MED 3.3.1.
 
-# Mémoire (Mo) :  1225.49 /   517.24 /   512.90 /   345.98 (VmPeak / VmSize / Optimum / Minimum)
-# Fin commande #0010   user+syst:        2.19s (syst:        0.12s, elaps:        0.00s)
+# Mémoire (Mo) :  1228.93 /   519.67 /   512.90 /   345.98 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0010   user+syst:        3.05s (syst:        0.14s, elaps:        0.00s)
 # ----------------------------------------------------------------------------------------------
 
 .. _stg1_cmd8:1
@@ -298,8 +298,8 @@ IMPR_RESU(FORMAT='RESULTAT',
                   VALE_MIN='OUI'),
           UNITE=8)
 
-# Mémoire (Mo) :  1225.49 /   517.45 /   512.90 /   345.98 (VmPeak / VmSize / Optimum / Minimum)
-# Fin commande #0011   user+syst:        0.08s (syst:        0.05s, elaps:        0.00s)
+# Mémoire (Mo) :  1228.93 /   519.79 /   512.90 /   345.98 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0011   user+syst:        0.14s (syst:        0.03s, elaps:        0.00s)
 # ----------------------------------------------------------------------------------------------
 
 .. _stg1_txt60
@@ -395,7 +395,7 @@ Mo.
   
  <I> <FIN> MEMOIRE JEVEUX MINIMALE REQUISE POUR L'EXECUTION :                     345.98 Mo
  <I> <FIN> MEMOIRE JEVEUX OPTIMALE REQUISE POUR L'EXECUTION :                     512.90 Mo
- <I> <FIN> MAXIMUM DE MEMOIRE UTILISEE PAR LE PROCESSUS LORS DE L'EXECUTION :    1225.49 Mo
+ <I> <FIN> MAXIMUM DE MEMOIRE UTILISEE PAR LE PROCESSUS LORS DE L'EXECUTION :    1228.93 Mo
   
  <I>       FERMETURE DES BASES EFFECTUEE
   
@@ -415,38 +415,38 @@ Mo.
    MEMOIRE JEVEUX OPTIMALE REQUISE POUR L'EXECUTION :     512.90 Mo
      - LIMITE LES ACCES DISQUE
      - AMELIORE LA VITESSE D'EXECUTION
-   MAXIMUM DE MEMOIRE UTILISEE PAR LE PROCESSUS     :    1225.49 Mo
+   MAXIMUM DE MEMOIRE UTILISEE PAR LE PROCESSUS     :    1228.93 Mo
      - COMPREND LA MEMOIRE CONSOMMEE PAR  JEVEUX, 
        LE SUPERVISEUR PYTHON, LES LIBRAIRIES EXTERNES
   
- <I>       FIN D'EXECUTION LE : LU-17-FEVR-2025 03:40:38
+ <I>       FIN D'EXECUTION LE : LU-17-FEVR-2025 10:43:56
 Signature of pickled file   : e083b2a2045970bf749f07e644a4c8edea03fd783210df9ca4c898293e4df20c
 Signature of info file      : 7bab8f16a3ca5d940f44f12ecbca34639302b455a067418d9e7613ace928aef9
-Signature of Jeveux database: 1d659748fd94b619581fe678be132ea527b07e67e00546d7b8127e5440dfe1ac
+Signature of Jeveux database: 5a11a6d8c358de678ed31dd70ce6cc18f6b75dddec97b939301cad7828a6412e
 
  ********************************************************************************
  * COMMAND                  :       USER :     SYSTEM :   USER+SYS :    ELAPSED *
  ********************************************************************************
- * DEBUT                    :       0.12 :       0.19 :       0.31 :       0.00 *
- * LIRE_MAILLAGE            :       1.61 :       0.05 :       1.66 :       0.00 *
- * AFFE_MODELE              :       0.45 :       0.00 :       0.45 :       0.00 *
- * DEFI_MATERIAU            :       0.00 :       0.00 :       0.00 :       0.00 *
- * AFFE_MATERIAU            :       0.02 :       0.00 :       0.02 :       0.00 *
- * AFFE_CHAR_MECA           :       0.05 :       0.02 :       0.06 :       0.00 *
- * MECA_STATIQUE            :      15.02 :       1.84 :      16.86 :       0.00 *
- * CALC_CHAMP               :       2.09 :       0.19 :       2.28 :       0.00 *
- * IMPR_RESU                :       2.19 :       0.12 :       2.31 :       0.00 *
- * IMPR_RESU                :       0.08 :       0.05 :       0.12 :       0.00 *
- * FIN                      :       0.38 :       0.52 :       0.89 :       0.00 *
+ * DEBUT                    :       0.19 :       0.16 :       0.34 :       0.00 *
+ * LIRE_MAILLAGE            :       2.53 :       0.06 :       2.59 :       0.00 *
+ * AFFE_MODELE              :       0.80 :       0.00 :       0.80 :       0.00 *
+ * DEFI_MATERIAU            :       0.02 :       0.00 :       0.02 :       0.00 *
+ * AFFE_MATERIAU            :       0.00 :       0.00 :       0.00 :       0.00 *
+ * AFFE_CHAR_MECA           :       0.16 :       0.00 :       0.16 :       0.00 *
+ * MECA_STATIQUE            :      17.44 :       1.53 :      18.97 :       0.00 *
+ * CALC_CHAMP               :       3.11 :       0.02 :       3.12 :       0.00 *
+ * IMPR_RESU                :       3.05 :       0.14 :       3.19 :       0.00 *
+ * IMPR_RESU                :       0.14 :       0.03 :       0.17 :       0.00 *
+ * FIN                      :       0.23 :       0.56 :       0.80 :       0.00 *
  *  . check syntax          :       0.02 :       0.00 :       0.02 :       0.00 *
- *  . fortran               :       6.67 :       1.12 :       7.80 :       0.00 *
+ *  . fortran               :       9.31 :       0.95 :      10.27 :       0.00 *
  ********************************************************************************
- * TOTAL_JOB                :      22.02 :       2.97 :      24.98 :       0.00 *
+ * TOTAL_JOB                :      27.67 :       2.50 :      30.17 :       0.00 *
  ********************************************************************************
 
-# Mémoire (Mo) :  1225.49 /    97.61 /   512.90 /   345.98 (VmPeak / VmSize / Optimum / Minimum)
-# Fin commande #0012   user+syst:        0.38s (syst:        0.52s, elaps:        0.00s)
+# Mémoire (Mo) :  1228.93 /   100.59 /   512.90 /   345.98 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0012   user+syst:        0.23s (syst:        0.56s, elaps:        0.00s)
 # ----------------------------------------------------------------------------------------------
 End of the Code_Aster execution
 Exited
-EXECUTION_CODE_ASTER_EXIT_3810=0
+EXECUTION_CODE_ASTER_EXIT_2193=0

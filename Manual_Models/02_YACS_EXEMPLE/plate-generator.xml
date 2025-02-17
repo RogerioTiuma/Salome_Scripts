@@ -180,14 +180,12 @@ smesh.SetName(zmax_1, 'zmax')
    <inline name="ASTKcall">
       <script><code><![CDATA[import subprocess
 
-as_run_path = r"C:\v2023\bin\as_run"  # Caminho do as_run
-job_file = r"D:\00_MODELOS\GITHUB\Salome_Scripts\Manual_Models\02_YACS_EXEMPLE\export"  # Ajuste para o caminho do seu arquivo ASTK
+as_run_path = r"D:\SALOME-9.10.0\v2023\bin\as_run"  # Caminho do as_run
+job_file = r"D:\00_MODELOS\GITHUB\Salome_Scripts\Manual_Models\02_YACS_EXEMPLE\export"
 
-cmd = f'"{as_run_path}" "{job_file}"'  # Aspas para evitar erro com espaÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§os
+cmd = f'"{as_run_path}" "{job_file}"'
 subprocess.run(cmd, shell=True)
-
 ]]></code></script>
-      <load container="DefaultContainer"/>
    </inline>
    <datanode name="matDataIn">
       <parameter name="E" type="double">
@@ -263,132 +261,149 @@ commFile.close()
       <inport name="NU" type="double"/>
    </inline>
    <inline name="PyScript0">
-      <script><code><![CDATA[# state file generated using paraview version 5.6.0-RC1
+      <script><code><![CDATA[#!/usr/bin/env python
 
-# ----------------------------------------------------------------
-# setup views used in the visualization
-# ----------------------------------------------------------------
-
-# trace generated using paraview version 5.6.0-RC1
+import paraview
+paraview.compatibility.major = 5
+paraview.compatibility.minor = 11
 
 #### import the simple module from the paraview
 from paraview.simple import *
 #### disable automatic camera reset on 'Show'
 paraview.simple._DisableFirstRenderCameraReset()
 
-# Create a new 'Render View'
-renderView1 = CreateView('RenderView')
-renderView1.ViewSize = [1627, 810]
-renderView1.AxesGrid = 'GridAxes3DActor'
-renderView1.CenterOfRotation = [250.0, 250.0, 6.0]
-renderView1.StereoType = 0
-renderView1.CameraPosition = [762.8999972303382, -76.0784809484509, 2426.3457848824155]
-renderView1.CameraFocalPoint = [762.8999972303382, -76.0784809484509, 6.0]
-renderView1.CameraParallelScale = 353.6042986164054
-renderView1.Background = [0.32, 0.34, 0.43]
-
-# init the 'GridAxes3DActor' selected for 'AxesGrid'
-renderView1.AxesGrid.XTitleFontFile = ''
-renderView1.AxesGrid.YTitleFontFile = ''
-renderView1.AxesGrid.ZTitleFontFile = ''
-renderView1.AxesGrid.XLabelFontFile = ''
-renderView1.AxesGrid.YLabelFontFile = ''
-renderView1.AxesGrid.ZLabelFontFile = ''
-
-# ----------------------------------------------------------------
-# restore active view
-SetActiveView(renderView1)
-# ----------------------------------------------------------------
-
-# ----------------------------------------------------------------
-# setup the data processing pipelines
-# ----------------------------------------------------------------
-
 # create a new 'MED Reader'
-plateresrmed = MEDReader(FileName='D:\\00_MODELOS\\GITHUB\\Salome_Scripts\\Manual_Models\\02_YACS_EXEMPLE\\plate-res.rmed')
-plateresrmed.AllArrays = ['TS0/00000001/ComSup0/reslin__DEPL@@][@@P1', 'TS0/00000001/ComSup0/reslin__SIEF_ELGA@@][@@GAUSS', 'TS0/00000001/ComSup0/reslin__SIEQ_ELGA@@][@@GAUSS', 'TS0/00000001/ComSup0/reslin__SIEQ_ELNO@@][@@GSSNE', 'TS0/00000001/ComSup0/reslin__SIEQ_NOEU@@][@@P1']
-plateresrmed.AllTimeSteps = ['0000']
+plateresrmed = MEDReader(registrationName='plate-res.rmed', FileNames=['D:\\00_MODELOS\\GITHUB\\Salome_Scripts\\Manual_Models\\02_YACS_EXEMPLE\\plate-res.rmed'])
 
-# ----------------------------------------------------------------
-# setup the visualization in view 'renderView1'
-# ----------------------------------------------------------------
+# Properties modified on plateresrmed
+plateresrmed.FieldsStatus = ['TS0/00000001/ComSup0/reslin__DEPL@@][@@P1', 'TS0/00000001/ComSup0/reslin__SIEF_ELGA@@][@@GAUSS', 'TS0/00000001/ComSup0/reslin__SIEQ_ELGA@@][@@GAUSS', 'TS0/00000001/ComSup0/reslin__SIEQ_ELNO@@][@@GSSNE', 'TS0/00000001/ComSup0/reslin__SIEQ_NOEU@@][@@P1']
 
-# show data from plateresrmed
-plateresrmedDisplay = Show(plateresrmed, renderView1)
+# get active source.
+plateresrmed = GetActiveSource()
+
+# get active view
+renderView1 = GetActiveViewOrCreate('RenderView')
+
+# get display properties
+plateresrmedDisplay = GetDisplayProperties(plateresrmed, view=renderView1)
+
+# reset view to fit data
+renderView1.ResetCamera(False)
+
+# update the view to ensure updated data information
+renderView1.Update()
+
+# set active source
+SetActiveSource(plateresrmed)
+
+# set scalar coloring
+ColorBy(plateresrmedDisplay, ('POINTS', 'reslin__SIEQ_NOEU', 'Magnitude'))
+
+# rescale color and/or opacity maps used to include current data range
+plateresrmedDisplay.RescaleTransferFunctionToDataRange(True, False)
+
+# show color bar/color legend
+plateresrmedDisplay.SetScalarBarVisibility(renderView1, True)
+
+# get color transfer function/color map for 'reslin__SIEQ_NOEU'
+reslin__SIEQ_NOEULUT = GetColorTransferFunction('reslin__SIEQ_NOEU')
+
+# get opacity transfer function/opacity map for 'reslin__SIEQ_NOEU'
+reslin__SIEQ_NOEUPWF = GetOpacityTransferFunction('reslin__SIEQ_NOEU')
+
+# get 2D transfer function for 'reslin__SIEQ_NOEU'
+reslin__SIEQ_NOEUTF2D = GetTransferFunction2D('reslin__SIEQ_NOEU')
+
+# get layout
+#layout = GetLayout()
+
+# layout/tab size in pixels
+#layout.SetSize(1508, 649)
+
+# current camera placement for renderView1
+renderView1.CameraPosition = [-838.2954601598269, 510.0627204941391, 789.9280527608555]
+renderView1.CameraFocalPoint = [250.0, 250.0, 6.0]
+renderView1.CameraViewUp = [0.5908781622391416, 0.04448910644042894, 0.80553318789298]
+renderView1.CameraParallelScale = 353.6042986164054
+
+UpdatePipeline(time=0.0, proxy=plateresrmed)
+Render()
+Show(plateresrmed)
+
+# save screenshot
+SaveScreenshot('D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/stress1.png', renderView1, ImageResolution=[1508, 649])
+
+# change representation type
+plateresrmedDisplay.SetRepresentationType('Surface With Edges')
+
+# layout/tab size in pixels
+# layout1.SetSize(1508, 649)
+
+# current camera placement for renderView1
+renderView1.CameraPosition = [-838.2954601598269, 510.0627204941391, 789.9280527608555]
+renderView1.CameraFocalPoint = [250.0, 250.0, 6.0]
+renderView1.CameraViewUp = [0.5908781622391416, 0.04448910644042894, 0.80553318789298]
+renderView1.CameraParallelScale = 353.6042986164054
+
+# save screenshot
+SaveScreenshot('D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/stress2.png', renderView1, ImageResolution=[1508, 649])
+
+# set scalar coloring
+ColorBy(plateresrmedDisplay, ('POINTS', 'reslin__DEPL', 'Magnitude'))
+
+# Hide the scalar bar for this color map if no visible data is colored by it.
+HideScalarBarIfNotNeeded(reslin__SIEQ_NOEULUT, renderView1)
+
+# rescale color and/or opacity maps used to include current data range
+plateresrmedDisplay.RescaleTransferFunctionToDataRange(True, False)
+
+# show color bar/color legend
+plateresrmedDisplay.SetScalarBarVisibility(renderView1, True)
 
 # get color transfer function/color map for 'reslin__DEPL'
 reslin__DEPLLUT = GetColorTransferFunction('reslin__DEPL')
-reslin__DEPLLUT.RGBPoints = [0.0, 0.231373, 0.298039, 0.752941, 0.25095541980018005, 0.865003, 0.865003, 0.865003, 0.5019108396003601, 0.705882, 0.0156863, 0.14902]
-reslin__DEPLLUT.ScalarRangeInitialized = 1.0
 
 # get opacity transfer function/opacity map for 'reslin__DEPL'
 reslin__DEPLPWF = GetOpacityTransferFunction('reslin__DEPL')
-reslin__DEPLPWF.Points = [0.0, 0.0, 0.5, 0.0, 0.5019108396003601, 1.0, 0.5, 0.0]
-reslin__DEPLPWF.ScalarRangeInitialized = 1
 
-# trace defaults for the display properties.
-plateresrmedDisplay.Representation = 'Surface'
-plateresrmedDisplay.ColorArrayName = ['POINTS', 'reslin__DEPL']
-plateresrmedDisplay.LookupTable = reslin__DEPLLUT
-plateresrmedDisplay.OSPRayScaleArray = 'reslin__DEPL'
-plateresrmedDisplay.OSPRayScaleFunction = 'PiecewiseFunction'
-plateresrmedDisplay.SelectOrientationVectors = 'None'
-plateresrmedDisplay.ScaleFactor = 50.0
-plateresrmedDisplay.SelectScaleArray = 'None'
-plateresrmedDisplay.GlyphType = 'Arrow'
-plateresrmedDisplay.GlyphTableIndexArray = 'None'
-plateresrmedDisplay.GaussianRadius = 2.5
-plateresrmedDisplay.SetScaleArray = ['POINTS', 'reslin__DEPL']
-plateresrmedDisplay.ScaleTransferFunction = 'PiecewiseFunction'
-plateresrmedDisplay.OpacityArray = ['POINTS', 'reslin__DEPL']
-plateresrmedDisplay.OpacityTransferFunction = 'PiecewiseFunction'
-plateresrmedDisplay.DataAxesGrid = 'GridAxesRepresentation'
-plateresrmedDisplay.SelectionCellLabelFontFile = ''
-plateresrmedDisplay.SelectionPointLabelFontFile = ''
-plateresrmedDisplay.PolarAxes = 'PolarAxesRepresentation'
-plateresrmedDisplay.ScalarOpacityFunction = reslin__DEPLPWF
-plateresrmedDisplay.ScalarOpacityUnitDistance = 19.614042168362662
+# get 2D transfer function for 'reslin__DEPL'
+reslin__DEPLTF2D = GetTransferFunction2D('reslin__DEPL')
 
-# init the 'GridAxesRepresentation' selected for 'DataAxesGrid'
-plateresrmedDisplay.DataAxesGrid.XTitleFontFile = ''
-plateresrmedDisplay.DataAxesGrid.YTitleFontFile = ''
-plateresrmedDisplay.DataAxesGrid.ZTitleFontFile = ''
-plateresrmedDisplay.DataAxesGrid.XLabelFontFile = ''
-plateresrmedDisplay.DataAxesGrid.YLabelFontFile = ''
-plateresrmedDisplay.DataAxesGrid.ZLabelFontFile = ''
+# layout/tab size in pixels
+# layout1.SetSize(1508, 649)
 
-# init the 'PolarAxesRepresentation' selected for 'PolarAxes'
-plateresrmedDisplay.PolarAxes.PolarAxisTitleFontFile = ''
-plateresrmedDisplay.PolarAxes.PolarAxisLabelFontFile = ''
-plateresrmedDisplay.PolarAxes.LastRadialAxisTextFontFile = ''
-plateresrmedDisplay.PolarAxes.SecondaryRadialAxesTextFontFile = ''
+# current camera placement for renderView1
+renderView1.CameraPosition = [-838.2954601598269, 510.0627204941391, 789.9280527608555]
+renderView1.CameraFocalPoint = [250.0, 250.0, 6.0]
+renderView1.CameraViewUp = [0.5908781622391416, 0.04448910644042894, 0.80553318789298]
+renderView1.CameraParallelScale = 353.6042986164054
 
-# setup the color legend parameters for each legend in this view
+# save screenshot
+SaveScreenshot('D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/DEPL1.png', renderView1, ImageResolution=[1508, 649])
 
-# get color legend/bar for reslin__DEPLLUT in view renderView1
-reslin__DEPLLUTColorBar = GetScalarBar(reslin__DEPLLUT, renderView1)
-reslin__DEPLLUTColorBar.Title = 'reslin__DEPL'
-reslin__DEPLLUTColorBar.ComponentTitle = 'Magnitude'
-reslin__DEPLLUTColorBar.TitleFontFile = ''
-reslin__DEPLLUTColorBar.LabelFontFile = ''
+# change representation type
+plateresrmedDisplay.SetRepresentationType('Surface')
 
-# set color bar visibility
-reslin__DEPLLUTColorBar.Visibility = 1
+# layout/tab size in pixels
+# layout1.SetSize(1508, 649)
 
-# show color legend
-plateresrmedDisplay.SetScalarBarVisibility(renderView1, True)
+# current camera placement for renderView1
+renderView1.CameraPosition = [-838.2954601598269, 510.0627204941391, 789.9280527608555]
+renderView1.CameraFocalPoint = [250.0, 250.0, 6.0]
+renderView1.CameraViewUp = [0.5908781622391416, 0.04448910644042894, 0.80553318789298]
+renderView1.CameraParallelScale = 353.6042986164054
 
-# ----------------------------------------------------------------
-# setup color maps and opacity mapes used in the visualization
-# note: the Get..() functions create a new object, if needed
-# ----------------------------------------------------------------
+# save screenshot
+SaveScreenshot('D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/DEPL2.png', renderView1, ImageResolution=[1508, 649])
 
-# ----------------------------------------------------------------
-# finally, restore active source
-SetActiveSource(plateresrmed)
-# ----------------------------------------------------------------
+#### saving camera placements for all active views
+
+# current camera placement for renderView1
+renderView1.CameraPosition = [-838.2954601598269, 510.0627204941391, 789.9280527608555]
+renderView1.CameraFocalPoint = [250.0, 250.0, 6.0]
+renderView1.CameraViewUp = [0.5908781622391416, 0.04448910644042894, 0.80553318789298]
+renderView1.CameraParallelScale = 353.6042986164054
 ]]></code></script>
-      <load container="DefaultContainer"/>
    </inline>
    <control> <fromnode>DataIn0</fromnode> <tonode>GeomNode</tonode> </control>
    <control> <fromnode>DataIn0</fromnode> <tonode>MeshNode</tonode> </control>
@@ -457,12 +472,12 @@ SetActiveSource(plateresrmed)
       <fromnode>matDataIn</fromnode> <fromport>NU</fromport>
       <tonode>Astercomm</tonode> <toport>NU</toport>
    </datalink>
-   <presentation name="DataIn0" x="6" y="35" width="158" height="144" expanded="1" expx="6" expy="35" expWidth="158" expHeight="144" shownState="0"/>
-   <presentation name="matDataIn" x="621.694" y="78.1698" width="158" height="90" expanded="1" expx="621.694" expy="78.1698" expWidth="158" expHeight="90" shownState="0"/>
    <presentation name="GeomNode" x="299.216" y="128.493" width="158" height="279" expanded="1" expx="299.216" expy="128.493" expWidth="158" expHeight="279" shownState="0"/>
    <presentation name="MeshNode" x="591.675" y="192.84" width="158" height="306" expanded="1" expx="591.675" expy="192.84" expWidth="158" expHeight="306" shownState="0"/>
-   <presentation name="PyScript0" x="910" y="296" width="158" height="36" expanded="1" expx="910" expy="296" expWidth="158" expHeight="36" shownState="0"/>
    <presentation name="Astercomm" x="815.897" y="95.2694" width="158" height="90" expanded="1" expx="815.897" expy="95.2694" expWidth="158" expHeight="90" shownState="0"/>
    <presentation name="ASTKcall" x="822.783" y="238.174" width="158" height="36" expanded="0" expx="822.783" expy="238.174" expWidth="158" expHeight="36" shownState="1"/>
+   <presentation name="PyScript0" x="910" y="296" width="158" height="36" expanded="1" expx="910" expy="296" expWidth="158" expHeight="36" shownState="0"/>
+   <presentation name="matDataIn" x="621.694" y="78.1698" width="158" height="90" expanded="1" expx="621.694" expy="78.1698" expWidth="158" expHeight="90" shownState="0"/>
+   <presentation name="DataIn0" x="6" y="35" width="158" height="144" expanded="1" expx="6" expy="35" expWidth="158" expHeight="144" shownState="0"/>
    <presentation name="__ROOT__" x="0" y="0" width="1072" height="502.84" expanded="1" expx="0" expy="0" expWidth="1072" expHeight="502.84" shownState="0"/>
 </proc>

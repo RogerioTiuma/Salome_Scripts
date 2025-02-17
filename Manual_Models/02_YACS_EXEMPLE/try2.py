@@ -1,0 +1,7 @@
+canex2 = OpenDataFile('D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/plate-res.rmed')
+clip = Clip()
+Hide(canex2)
+Show(clip)
+ResetCamera()
+Render()
+SaveScreenshot('D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/picture.png')

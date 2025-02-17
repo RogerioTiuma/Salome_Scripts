@@ -1,0 +1,7 @@
+import subprocess
+
+as_run_path = r"D:\SALOME-9.10.0\v2023\bin\as_run"  # Caminho do as_run
+job_file = r"D:\00_MODELOS\GITHUB\Salome_Scripts\Manual_Models\02_YACS_EXEMPLE\export"
+
+cmd = f'"{as_run_path}" "{job_file}"'
+subprocess.run(cmd, shell=True)
