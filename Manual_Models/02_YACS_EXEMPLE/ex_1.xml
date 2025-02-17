@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='iso-8859-1' ?>
+<proc name="newSchema_1">
+   <type name="string" kind="string"/>
+   <struct name="Engines/dataref">
+      <member name="ref" type="string"/>
+   </struct>
+   <type name="bool" kind="bool"/>
+   <sequence name="boolvec" content="bool"/>
+   <type name="double" kind="double"/>
+   <sequence name="dblevec" content="double"/>
+   <objref name="file" id="file"/>
+   <type name="int" kind="int"/>
+   <sequence name="intvec" content="int"/>
+   <struct name="stringpair">
+      <member name="name" type="string"/>
+      <member name="value" type="string"/>
+   </struct>
+   <sequence name="propvec" content="stringpair"/>
+   <objref name="pyobj" id="python:obj:1.0"/>
+   <sequence name="seqboolvec" content="boolvec"/>
+   <sequence name="seqdblevec" content="dblevec"/>
+   <sequence name="seqintvec" content="intvec"/>
+   <sequence name="seqpyobj" content="pyobj"/>
+   <sequence name="stringvec" content="string"/>
+   <sequence name="seqstringvec" content="stringvec"/>
+   <container name="DefaultContainer">
+      <property name="container_kind" value="Salome"/>
+      <property name="attached_on_cloning" value="0"/>
+      <property name="container_name" value="FactoryServer"/>
+      <property name="name" value="localhost"/>
+   </container>
+   <inline name="PyScript0">
+      <script><code><![CDATA[o1 = 2.0
+
+
+
+]]></code></script>
+      <load container="DefaultContainer"/>
+      <outport name="o1" type="double"/>
+   </inline>
+   <forloop name="ForLoop2" nsteps="5">
+      <inline name="PyScript3">
+         <script><code><![CDATA[s1 = e1 + e2
+s2 = e1 - e2
+]]></code></script>
+         <load container="DefaultContainer"/>
+         <inport name="e1" type="double"/>
+         <inport name="e2" type="double"/>
+         <outport name="s1" type="double"/>
+         <outport name="s2" type="double"/>
+      </inline>
+   </forloop>
+   <inline name="PyScript8">
+      <script><code><![CDATA[]]></code></script>
+      <load container="DefaultContainer"/>
+      <inport name="e1" type="double"/>
+      <inport name="e2" type="double"/>
+   </inline>
+   <control> <fromnode>PyScript0</fromnode> <tonode>ForLoop2</tonode> </control>
+   <control> <fromnode>ForLoop2</fromnode> <tonode>PyScript8</tonode> </control>
+   <datalink control="false">
+      <fromnode>PyScript0</fromnode> <fromport>o1</fromport>
+      <tonode>ForLoop2.PyScript3</tonode> <toport>e2</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>ForLoop2</fromnode> <fromport>index</fromport>
+      <tonode>ForLoop2.PyScript3</tonode> <toport>e1</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>ForLoop2.PyScript3</fromnode> <fromport>s1</fromport>
+      <tonode>PyScript8</tonode> <toport>e1</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>ForLoop2.PyScript3</fromnode> <fromport>s2</fromport>
+      <tonode>PyScript8</tonode> <toport>e2</toport>
+   </datalink>
+   <parameter>
+      <tonode>ForLoop2</tonode><toport>nsteps</toport>
+      <value><int>5</int></value>
+   </parameter>
+   <presentation name="PyScript0" x="17" y="128" width="158" height="63" expanded="1" expx="17" expy="128" expWidth="158" expHeight="63" shownState="0"/>
+   <presentation name="ForLoop2.PyScript3" x="8" y="63" width="158" height="90" expanded="1" expx="8" expy="63" expWidth="158" expHeight="90" shownState="0"/>
+   <presentation name="ForLoop2" x="220" y="113" width="170" height="157" expanded="1" expx="220" expy="113" expWidth="170" expHeight="157" shownState="0"/>
+   <presentation name="PyScript8" x="452.5" y="201" width="158" height="90" expanded="1" expx="452.5" expy="201" expWidth="158" expHeight="90" shownState="0"/>
+   <presentation name="__ROOT__" x="0" y="0" width="614.5" height="295" expanded="1" expx="0" expy="0" expWidth="614.5" expHeight="295" shownState="0"/>
+</proc>

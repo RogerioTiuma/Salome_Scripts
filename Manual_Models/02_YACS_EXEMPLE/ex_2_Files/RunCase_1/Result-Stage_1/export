@@ -1,0 +1,24 @@
+P actions make_etude
+P debug nodebug
+P memjob 2097152
+P memory_limit 2048.0
+P mode interactif
+P mpi_nbcpu 1
+P mpi_nbnoeud 1
+P ncpus 1
+P nomjob RunCase_1_Stage_1
+P origine AsterStudy 0.11
+P rep_trav C:\Users\Lenovo\AppData\Local\Temp\Lenovo-RogerioPC-interactif_8755
+P server localhost
+P studyid 8524-0001-RogerioPC
+P time_limit 900.0
+P tpsjob 16
+P version stable
+A memjeveux 256.0
+A tpmax 900.0
+F comm D:\00_MODELOS\GITHUB\Salome_Scripts\Manual_Models\02_YACS_EXEMPLE\ex_2_Files\RunCase_1\Result-Stage_1\RunCase_1_Stage_1.comm D  1
+F libr D:\00_MODELOS\GITHUB\Salome_Scripts\Manual_Models\02_YACS_EXEMPLE\ex_2_Files\RunCase_1\Result-Stage_1\_ExportedFromSalomeObject_0_1_3_3.med D  20
+F libr D:\00_MODELOS\GITHUB\Salome_Scripts\Manual_Models\02_YACS_EXEMPLE\ex_2_Files\RunCase_1\Result-Stage_1\plate-res.rmed R  80
+F libr D:\00_MODELOS\GITHUB\Salome_Scripts\Manual_Models\02_YACS_EXEMPLE\ex_2_Files\RunCase_1\Result-Stage_1\plate-res.txt R  8
+F mess D:\00_MODELOS\GITHUB\Salome_Scripts\Manual_Models\02_YACS_EXEMPLE\ex_2_Files\RunCase_1\Result-Stage_1\message R  6
+R base D:\00_MODELOS\GITHUB\Salome_Scripts\Manual_Models\02_YACS_EXEMPLE\ex_2_Files\RunCase_1\Result-Stage_1\base-stage1 R  0

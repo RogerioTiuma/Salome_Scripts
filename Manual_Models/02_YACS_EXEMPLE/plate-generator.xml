@@ -1,0 +1,468 @@
+<?xml version='1.0' encoding='iso-8859-1' ?>
+<proc name="newSchema_1">
+   <type name="string" kind="string"/>
+   <struct name="Engines/dataref">
+      <member name="ref" type="string"/>
+   </struct>
+   <type name="bool" kind="bool"/>
+   <sequence name="boolvec" content="bool"/>
+   <type name="double" kind="double"/>
+   <sequence name="dblevec" content="double"/>
+   <objref name="file" id="file"/>
+   <type name="int" kind="int"/>
+   <sequence name="intvec" content="int"/>
+   <struct name="stringpair">
+      <member name="name" type="string"/>
+      <member name="value" type="string"/>
+   </struct>
+   <sequence name="propvec" content="stringpair"/>
+   <objref name="pyobj" id="python:obj:1.0"/>
+   <sequence name="seqboolvec" content="boolvec"/>
+   <sequence name="seqdblevec" content="dblevec"/>
+   <sequence name="seqintvec" content="intvec"/>
+   <sequence name="seqpyobj" content="pyobj"/>
+   <sequence name="stringvec" content="string"/>
+   <sequence name="seqstringvec" content="stringvec"/>
+   <container name="DefaultContainer">
+      <property name="container_kind" value="Salome"/>
+      <property name="attached_on_cloning" value="0"/>
+      <property name="container_name" value="FactoryServer"/>
+      <property name="name" value="localhost"/>
+   </container>
+   <datanode name="DataIn0">
+      <parameter name="a" type="double">
+         <value><double>500</double></value>
+      </parameter>
+      <parameter name="b" type="double">
+         <value><double>500</double></value>
+      </parameter>
+      <parameter name="t" type="double">
+         <value><double>12</double></value>
+      </parameter>
+      <parameter name="meshSize" type="double">
+         <value><double>8</double></value>
+      </parameter>
+   </datanode>
+   <inline name="GeomNode">
+      <script><code><![CDATA[#!/usr/bin/env python
+
+###
+### This file is generated automatically by SALOME v9.10.0 with dump python functionality
+###
+
+import sys
+import salome
+
+theStudy = salome.myStudy
+
+salome.salome_init()
+import salome_notebook
+notebook = salome_notebook.NoteBook()
+sys.path.insert(0, r'D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE')
+
+###
+### GEOM component
+###
+
+import GEOM
+from salome.geom import geomBuilder
+import math
+import SALOMEDS
+
+
+geompy = geomBuilder.New(theStudy)
+
+O = geompy.MakeVertex(0, 0, 0)
+OX = geompy.MakeVectorDXDYDZ(1, 0, 0)
+OY = geompy.MakeVectorDXDYDZ(0, 1, 0)
+OZ = geompy.MakeVectorDXDYDZ(0, 0, 1)
+Box_1 = geompy.MakeBoxDXDYDZ(a, b, t)
+volume = geompy.CreateGroup(Box_1, geompy.ShapeType["SOLID"])
+geompy.UnionIDs(volume, [1])
+zmax = geompy.CreateGroup(Box_1, geompy.ShapeType["FACE"])
+geompy.UnionIDs(zmax, [33])
+zmin = geompy.CreateGroup(Box_1, geompy.ShapeType["FACE"])
+geompy.UnionIDs(zmin, [31])
+xmax = geompy.CreateGroup(Box_1, geompy.ShapeType["FACE"])
+geompy.UnionIDs(xmax, [13])
+xmin = geompy.CreateGroup(Box_1, geompy.ShapeType["FACE"])
+geompy.UnionIDs(xmin, [3])
+ymin = geompy.CreateGroup(Box_1, geompy.ShapeType["FACE"])
+geompy.UnionIDs(ymin, [23])
+ymax = geompy.CreateGroup(Box_1, geompy.ShapeType["FACE"])
+geompy.UnionIDs(ymax, [27])
+[volume, zmax, zmin, xmax, xmin, ymin, ymax] = geompy.GetExistingSubObjects(Box_1, False)
+geompy.addToStudy( O, 'O' )
+geompy.addToStudy( OX, 'OX' )
+geompy.addToStudy( OY, 'OY' )
+geompy.addToStudy( OZ, 'OZ' )
+geompy.addToStudy( Box_1, 'Box_1' )
+geompy.addToStudyInFather( Box_1, volume, 'volume' )
+geompy.addToStudyInFather( Box_1, zmax, 'zmax' )
+geompy.addToStudyInFather( Box_1, zmin, 'zmin' )
+geompy.addToStudyInFather( Box_1, xmax, 'xmax' )
+geompy.addToStudyInFather( Box_1, xmin, 'xmin' )
+geompy.addToStudyInFather( Box_1, ymin, 'ymin' )
+geompy.addToStudyInFather( Box_1, ymax, 'ymax' )
+]]></code></script>
+      <inport name="a" type="double"/>
+      <inport name="b" type="double"/>
+      <inport name="t" type="double"/>
+      <outport name="xmin" type="pyobj"/>
+      <outport name="xmax" type="pyobj"/>
+      <outport name="ymin" type="pyobj"/>
+      <outport name="ymax" type="pyobj"/>
+      <outport name="zmin" type="pyobj"/>
+      <outport name="zmax" type="pyobj"/>
+      <outport name="volume" type="pyobj"/>
+      <outport name="theStudy" type="pyobj"/>
+      <outport name="Box_1" type="pyobj"/>
+   </inline>
+   <inline name="MeshNode">
+      <script><code><![CDATA[###
+### SMESH component
+###
+
+import  SMESH, SALOMEDS
+from salome.smesh import smeshBuilder
+
+smesh = smeshBuilder.New(theStudy)
+#smesh.SetEnablePublish( False ) # Set to False to avoid publish in study if not needed or in some particular situations:
+                                 # multiples meshes built in parallel, complex and numerous mesh edition (performance)
+
+Mesh_1 = smesh.Mesh(Box_1,'Mesh_1')
+Regular_1D = Mesh_1.Segment()
+Local_Length_1 = Regular_1D.LocalLength(4,None,1e-07)
+Quadrangle_2D = Mesh_1.Quadrangle(algo=smeshBuilder.QUADRANGLE)
+Hexa_3D = Mesh_1.Hexahedron(algo=smeshBuilder.Hexa)
+volume_1 = Mesh_1.GroupOnGeom(volume,'volume',SMESH.VOLUME)
+zmax_1 = Mesh_1.GroupOnGeom(zmax,'zmax',SMESH.FACE)
+zmin_1 = Mesh_1.GroupOnGeom(zmin,'zmin',SMESH.FACE)
+xmax_1 = Mesh_1.GroupOnGeom(xmax,'xmax',SMESH.FACE)
+xmin_1 = Mesh_1.GroupOnGeom(xmin,'xmin',SMESH.FACE)
+ymin_1 = Mesh_1.GroupOnGeom(ymin,'ymin',SMESH.FACE)
+ymax_1 = Mesh_1.GroupOnGeom(ymax,'ymax',SMESH.FACE)
+isDone = Mesh_1.Compute()
+[ volume_1, zmax_1, zmin_1, xmax_1, xmin_1, ymin_1, ymax_1 ] = Mesh_1.GetGroups()
+smesh.SetName(Mesh_1, 'Mesh_1')
+try:
+  Mesh_1.ExportMED( r'D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/Plate.med', 0, 41, 1, Mesh_1, 1, [], '',-1, 1 )
+  pass
+except:
+  print('ExportPartToMED() failed. Invalid file name?')
+
+
+## Set names of Mesh objects
+smesh.SetName(Regular_1D.GetAlgorithm(), 'Regular_1D')
+smesh.SetName(Hexa_3D.GetAlgorithm(), 'Hexa_3D')
+smesh.SetName(Quadrangle_2D.GetAlgorithm(), 'Quadrangle_2D')
+smesh.SetName(volume_1, 'volume')
+smesh.SetName(Local_Length_1, 'Local Length_1')
+smesh.SetName(Mesh_1.GetMesh(), 'Mesh_1')
+smesh.SetName(ymax_1, 'ymax')
+smesh.SetName(ymin_1, 'ymin')
+smesh.SetName(xmin_1, 'xmin')
+smesh.SetName(xmax_1, 'xmax')
+smesh.SetName(zmin_1, 'zmin')
+smesh.SetName(zmax_1, 'zmax')
+]]></code></script>
+      <inport name="xmin" type="pyobj"/>
+      <inport name="xmax" type="pyobj"/>
+      <inport name="ymin" type="pyobj"/>
+      <inport name="ymax" type="pyobj"/>
+      <inport name="zmin" type="pyobj"/>
+      <inport name="zmax" type="pyobj"/>
+      <inport name="volume" type="pyobj"/>
+      <inport name="theStudy" type="pyobj"/>
+      <inport name="Box_1" type="pyobj"/>
+      <inport name="meshSize" type="double"/>
+   </inline>
+   <inline name="ASTKcall">
+      <script><code><![CDATA[import subprocess
+
+as_run_path = r"C:\v2023\bin\as_run"  # Caminho do as_run
+job_file = r"D:\00_MODELOS\GITHUB\Salome_Scripts\Manual_Models\02_YACS_EXEMPLE\export"  # Ajuste para o caminho do seu arquivo ASTK
+
+cmd = f'"{as_run_path}" "{job_file}"'  # Aspas para evitar erro com espaÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ§os
+subprocess.run(cmd, shell=True)
+
+]]></code></script>
+      <load container="DefaultContainer"/>
+   </inline>
+   <datanode name="matDataIn">
+      <parameter name="E" type="double">
+         <value><double>200000</double></value>
+      </parameter>
+      <parameter name="NU" type="double">
+         <value><double>0.28</double></value>
+      </parameter>
+   </datanode>
+   <inline name="Astercomm">
+      <script><code><![CDATA[import os,sys
+
+commFilePath = r'D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/RunCase_1_Stage_1.comm'
+
+commString = """DEBUT(LANG='FR')
+
+
+mesh = LIRE_MAILLAGE(identifier='0:1',
+                     UNITE=20)
+
+model = AFFE_MODELE(identifier='1:1',
+                    AFFE=_F(MODELISATION='3D',
+                            PHENOMENE='MECANIQUE',
+                            TOUT='OUI'),
+                    MAILLAGE=mesh)
+mater = DEFI_MATERIAU(identifier='2:1', 
+                         ELAS=_F(E="""+str(E)+""",
+                            NU="""+str(NU)+"""))
+                                
+fieldmat = AFFE_MATERIAU(identifier='3:1',
+                         AFFE=_F(MATER=(mater, ),
+                                 TOUT='OUI'),
+                         MAILLAGE=mesh,
+                         MODELE=model)
+
+load = AFFE_CHAR_MECA(identifier='4:1',
+                      DDL_IMPO=_F(BLOCAGE=('DEPLACEMENT', ),
+                                  GROUP_MA=('xmin', )),
+                      MODELE=model,
+                      PRES_REP=_F(GROUP_MA=('xmax', ),
+                                  PRES=-200.0))
+
+reslin = MECA_STATIQUE(identifier='5:1',
+                       CHAM_MATER=fieldmat,
+                       EXCIT=_F(CHARGE=load),
+                       MODELE=model)
+
+reslin = CALC_CHAMP(identifier='6:1',
+                    reuse=reslin,
+                    CRITERES=('SIEQ_ELGA', 'SIEQ_ELNO', 'SIEQ_NOEU'),
+                    RESULTAT=reslin)
+
+IMPR_RESU(identifier='7:1',
+          FORMAT='MED',
+          RESU=_F(RESULTAT=reslin),
+          UNITE=80)
+
+IMPR_RESU(identifier='8:1',
+          FORMAT='RESULTAT',
+          RESU=_F(NOM_CHAM=('DEPL', ),
+                  RESULTAT=reslin,
+                  VALE_MAX='OUI',
+                  VALE_MIN='OUI'),
+          UNITE=8)
+
+FIN()"""
+
+commFile = open(commFilePath,'w')
+commFile.write(commString)
+commFile.close()
+]]></code></script>
+      <inport name="E" type="double"/>
+      <inport name="NU" type="double"/>
+   </inline>
+   <inline name="PyScript0">
+      <script><code><![CDATA[# state file generated using paraview version 5.6.0-RC1
+
+# ----------------------------------------------------------------
+# setup views used in the visualization
+# ----------------------------------------------------------------
+
+# trace generated using paraview version 5.6.0-RC1
+
+#### import the simple module from the paraview
+from paraview.simple import *
+#### disable automatic camera reset on 'Show'
+paraview.simple._DisableFirstRenderCameraReset()
+
+# Create a new 'Render View'
+renderView1 = CreateView('RenderView')
+renderView1.ViewSize = [1627, 810]
+renderView1.AxesGrid = 'GridAxes3DActor'
+renderView1.CenterOfRotation = [250.0, 250.0, 6.0]
+renderView1.StereoType = 0
+renderView1.CameraPosition = [762.8999972303382, -76.0784809484509, 2426.3457848824155]
+renderView1.CameraFocalPoint = [762.8999972303382, -76.0784809484509, 6.0]
+renderView1.CameraParallelScale = 353.6042986164054
+renderView1.Background = [0.32, 0.34, 0.43]
+
+# init the 'GridAxes3DActor' selected for 'AxesGrid'
+renderView1.AxesGrid.XTitleFontFile = ''
+renderView1.AxesGrid.YTitleFontFile = ''
+renderView1.AxesGrid.ZTitleFontFile = ''
+renderView1.AxesGrid.XLabelFontFile = ''
+renderView1.AxesGrid.YLabelFontFile = ''
+renderView1.AxesGrid.ZLabelFontFile = ''
+
+# ----------------------------------------------------------------
+# restore active view
+SetActiveView(renderView1)
+# ----------------------------------------------------------------
+
+# ----------------------------------------------------------------
+# setup the data processing pipelines
+# ----------------------------------------------------------------
+
+# create a new 'MED Reader'
+plateresrmed = MEDReader(FileName='D:\\00_MODELOS\\GITHUB\\Salome_Scripts\\Manual_Models\\02_YACS_EXEMPLE\\plate-res.rmed')
+plateresrmed.AllArrays = ['TS0/00000001/ComSup0/reslin__DEPL@@][@@P1', 'TS0/00000001/ComSup0/reslin__SIEF_ELGA@@][@@GAUSS', 'TS0/00000001/ComSup0/reslin__SIEQ_ELGA@@][@@GAUSS', 'TS0/00000001/ComSup0/reslin__SIEQ_ELNO@@][@@GSSNE', 'TS0/00000001/ComSup0/reslin__SIEQ_NOEU@@][@@P1']
+plateresrmed.AllTimeSteps = ['0000']
+
+# ----------------------------------------------------------------
+# setup the visualization in view 'renderView1'
+# ----------------------------------------------------------------
+
+# show data from plateresrmed
+plateresrmedDisplay = Show(plateresrmed, renderView1)
+
+# get color transfer function/color map for 'reslin__DEPL'
+reslin__DEPLLUT = GetColorTransferFunction('reslin__DEPL')
+reslin__DEPLLUT.RGBPoints = [0.0, 0.231373, 0.298039, 0.752941, 0.25095541980018005, 0.865003, 0.865003, 0.865003, 0.5019108396003601, 0.705882, 0.0156863, 0.14902]
+reslin__DEPLLUT.ScalarRangeInitialized = 1.0
+
+# get opacity transfer function/opacity map for 'reslin__DEPL'
+reslin__DEPLPWF = GetOpacityTransferFunction('reslin__DEPL')
+reslin__DEPLPWF.Points = [0.0, 0.0, 0.5, 0.0, 0.5019108396003601, 1.0, 0.5, 0.0]
+reslin__DEPLPWF.ScalarRangeInitialized = 1
+
+# trace defaults for the display properties.
+plateresrmedDisplay.Representation = 'Surface'
+plateresrmedDisplay.ColorArrayName = ['POINTS', 'reslin__DEPL']
+plateresrmedDisplay.LookupTable = reslin__DEPLLUT
+plateresrmedDisplay.OSPRayScaleArray = 'reslin__DEPL'
+plateresrmedDisplay.OSPRayScaleFunction = 'PiecewiseFunction'
+plateresrmedDisplay.SelectOrientationVectors = 'None'
+plateresrmedDisplay.ScaleFactor = 50.0
+plateresrmedDisplay.SelectScaleArray = 'None'
+plateresrmedDisplay.GlyphType = 'Arrow'
+plateresrmedDisplay.GlyphTableIndexArray = 'None'
+plateresrmedDisplay.GaussianRadius = 2.5
+plateresrmedDisplay.SetScaleArray = ['POINTS', 'reslin__DEPL']
+plateresrmedDisplay.ScaleTransferFunction = 'PiecewiseFunction'
+plateresrmedDisplay.OpacityArray = ['POINTS', 'reslin__DEPL']
+plateresrmedDisplay.OpacityTransferFunction = 'PiecewiseFunction'
+plateresrmedDisplay.DataAxesGrid = 'GridAxesRepresentation'
+plateresrmedDisplay.SelectionCellLabelFontFile = ''
+plateresrmedDisplay.SelectionPointLabelFontFile = ''
+plateresrmedDisplay.PolarAxes = 'PolarAxesRepresentation'
+plateresrmedDisplay.ScalarOpacityFunction = reslin__DEPLPWF
+plateresrmedDisplay.ScalarOpacityUnitDistance = 19.614042168362662
+
+# init the 'GridAxesRepresentation' selected for 'DataAxesGrid'
+plateresrmedDisplay.DataAxesGrid.XTitleFontFile = ''
+plateresrmedDisplay.DataAxesGrid.YTitleFontFile = ''
+plateresrmedDisplay.DataAxesGrid.ZTitleFontFile = ''
+plateresrmedDisplay.DataAxesGrid.XLabelFontFile = ''
+plateresrmedDisplay.DataAxesGrid.YLabelFontFile = ''
+plateresrmedDisplay.DataAxesGrid.ZLabelFontFile = ''
+
+# init the 'PolarAxesRepresentation' selected for 'PolarAxes'
+plateresrmedDisplay.PolarAxes.PolarAxisTitleFontFile = ''
+plateresrmedDisplay.PolarAxes.PolarAxisLabelFontFile = ''
+plateresrmedDisplay.PolarAxes.LastRadialAxisTextFontFile = ''
+plateresrmedDisplay.PolarAxes.SecondaryRadialAxesTextFontFile = ''
+
+# setup the color legend parameters for each legend in this view
+
+# get color legend/bar for reslin__DEPLLUT in view renderView1
+reslin__DEPLLUTColorBar = GetScalarBar(reslin__DEPLLUT, renderView1)
+reslin__DEPLLUTColorBar.Title = 'reslin__DEPL'
+reslin__DEPLLUTColorBar.ComponentTitle = 'Magnitude'
+reslin__DEPLLUTColorBar.TitleFontFile = ''
+reslin__DEPLLUTColorBar.LabelFontFile = ''
+
+# set color bar visibility
+reslin__DEPLLUTColorBar.Visibility = 1
+
+# show color legend
+plateresrmedDisplay.SetScalarBarVisibility(renderView1, True)
+
+# ----------------------------------------------------------------
+# setup color maps and opacity mapes used in the visualization
+# note: the Get..() functions create a new object, if needed
+# ----------------------------------------------------------------
+
+# ----------------------------------------------------------------
+# finally, restore active source
+SetActiveSource(plateresrmed)
+# ----------------------------------------------------------------
+]]></code></script>
+      <load container="DefaultContainer"/>
+   </inline>
+   <control> <fromnode>DataIn0</fromnode> <tonode>GeomNode</tonode> </control>
+   <control> <fromnode>DataIn0</fromnode> <tonode>MeshNode</tonode> </control>
+   <control> <fromnode>GeomNode</fromnode> <tonode>MeshNode</tonode> </control>
+   <control> <fromnode>MeshNode</fromnode> <tonode>matDataIn</tonode> </control>
+   <control> <fromnode>ASTKcall</fromnode> <tonode>PyScript0</tonode> </control>
+   <control> <fromnode>matDataIn</fromnode> <tonode>Astercomm</tonode> </control>
+   <control> <fromnode>Astercomm</fromnode> <tonode>ASTKcall</tonode> </control>
+   <datalink control="false">
+      <fromnode>DataIn0</fromnode> <fromport>a</fromport>
+      <tonode>GeomNode</tonode> <toport>a</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>DataIn0</fromnode> <fromport>b</fromport>
+      <tonode>GeomNode</tonode> <toport>b</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>DataIn0</fromnode> <fromport>t</fromport>
+      <tonode>GeomNode</tonode> <toport>t</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>DataIn0</fromnode> <fromport>meshSize</fromport>
+      <tonode>MeshNode</tonode> <toport>meshSize</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>GeomNode</fromnode> <fromport>xmin</fromport>
+      <tonode>MeshNode</tonode> <toport>xmin</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>GeomNode</fromnode> <fromport>xmax</fromport>
+      <tonode>MeshNode</tonode> <toport>xmax</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>GeomNode</fromnode> <fromport>ymin</fromport>
+      <tonode>MeshNode</tonode> <toport>ymin</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>GeomNode</fromnode> <fromport>ymax</fromport>
+      <tonode>MeshNode</tonode> <toport>ymax</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>GeomNode</fromnode> <fromport>zmin</fromport>
+      <tonode>MeshNode</tonode> <toport>zmin</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>GeomNode</fromnode> <fromport>zmax</fromport>
+      <tonode>MeshNode</tonode> <toport>zmax</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>GeomNode</fromnode> <fromport>volume</fromport>
+      <tonode>MeshNode</tonode> <toport>volume</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>GeomNode</fromnode> <fromport>theStudy</fromport>
+      <tonode>MeshNode</tonode> <toport>theStudy</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>GeomNode</fromnode> <fromport>Box_1</fromport>
+      <tonode>MeshNode</tonode> <toport>Box_1</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>matDataIn</fromnode> <fromport>E</fromport>
+      <tonode>Astercomm</tonode> <toport>E</toport>
+   </datalink>
+   <datalink control="false">
+      <fromnode>matDataIn</fromnode> <fromport>NU</fromport>
+      <tonode>Astercomm</tonode> <toport>NU</toport>
+   </datalink>
+   <presentation name="DataIn0" x="6" y="35" width="158" height="144" expanded="1" expx="6" expy="35" expWidth="158" expHeight="144" shownState="0"/>
+   <presentation name="matDataIn" x="621.694" y="78.1698" width="158" height="90" expanded="1" expx="621.694" expy="78.1698" expWidth="158" expHeight="90" shownState="0"/>
+   <presentation name="GeomNode" x="299.216" y="128.493" width="158" height="279" expanded="1" expx="299.216" expy="128.493" expWidth="158" expHeight="279" shownState="0"/>
+   <presentation name="MeshNode" x="591.675" y="192.84" width="158" height="306" expanded="1" expx="591.675" expy="192.84" expWidth="158" expHeight="306" shownState="0"/>
+   <presentation name="PyScript0" x="910" y="296" width="158" height="36" expanded="1" expx="910" expy="296" expWidth="158" expHeight="36" shownState="0"/>
+   <presentation name="Astercomm" x="815.897" y="95.2694" width="158" height="90" expanded="1" expx="815.897" expy="95.2694" expWidth="158" expHeight="90" shownState="0"/>
+   <presentation name="ASTKcall" x="822.783" y="238.174" width="158" height="36" expanded="0" expx="822.783" expy="238.174" expWidth="158" expHeight="36" shownState="1"/>
+   <presentation name="__ROOT__" x="0" y="0" width="1072" height="502.84" expanded="1" expx="0" expy="0" expWidth="1072" expHeight="502.84" shownState="0"/>
+</proc>

@@ -1,0 +1,634 @@
+
+[SALOME] C:\Users\Lenovo\AppData\Local\Temp\salome_localres_workdir_Lenovo\Lenovo-RogerioPC-Sun-16-070407.864>echo OFF 
+P�gina de c�digo ativa: 65001
+
+--------------------------------------------------------------------------------
+ Code_Aster execution
+
+<INFO> prepare environment in C:\Users\Lenovo\AppData\Local\Temp\Lenovo-RogerioPC-interactif_2942
+
+--------------------------------------------------------------------------------
+ Copying datas
+
+copying ...\Lenovo-RogerioPC-Sun-16-070407.864\RunCase_1_Stage_1.comm...
+                                                                        copying ...\Lenovo-RogerioPC-Sun-16-070407.864\_ExportedFromSalomeObject_0_1_3_3.med...
+                                                                        <INFO> Parameters : memory 2048 MB - time limit 900 s
+
+--------------------------------------------------------------------------------
+ Content of C:\Users\Lenovo\AppData\Local\Temp\Lenovo-RogerioPC-interactif_2942 before execution
+
+b''
+cmd ['C:\\v2023\\Python37\\python.exe', 'fort.1', '--num_job=2942', '--mode=interactif', '--rep_outils=C:\\v2023\\outils', '--rep_mat=C:\\v2023\\16.5\\share\\aster\\materiau', '--rep_dex=C:\\v2023\\16.5\\share\\aster\\datg', '--numthreads=1', '--suivi_batch']
+
+--------------------------------------------------------------------------------
+ Code_Aster run
+
+<INFO> Command line 1 :
+<INFO> C:\v2023\Python37\python.exe fort.1 --num_job=2942 --mode=interactif --rep_outils=C:\v2023\outils --rep_mat=C:\v2023\16.5\share\aster\materiau --rep_dex=C:\v2023\16.5\share\aster\datg --numthreads=1 --suivi_batch --tpmax=900.0 --memjeveux=256.0
+<INFO> Content of the file to execute
+# ------------------------------------------------------------------------------------------
+# coding=utf-8
+
+# temporarly added for compatibility with code_aster legacy
+from math import *
+
+import code_aster
+from code_aster.Commands import *
+
+DEBUT(LANG='FR')
+
+
+
+mesh = LIRE_MAILLAGE(identifier='0:1',
+
+                     UNITE=20)
+
+
+
+model = AFFE_MODELE(identifier='1:1',
+
+                    AFFE=_F(MODELISATION='3D',
+
+                            PHENOMENE='MECANIQUE',
+
+                            TOUT='OUI'),
+
+                    MAILLAGE=mesh)
+
+
+
+mater = DEFI_MATERIAU(identifier='2:1',
+
+                      ELAS=_F(E=197000.0,
+
+                              NU=0.3))
+
+
+
+fieldmat = AFFE_MATERIAU(identifier='3:1',
+
+                         AFFE=_F(MATER=(mater, ),
+
+                                 TOUT='OUI'),
+
+                         MAILLAGE=mesh,
+
+                         MODELE=model)
+
+
+
+load = AFFE_CHAR_MECA(identifier='4:1',
+
+                      DDL_IMPO=_F(BLOCAGE=('DEPLACEMENT', ),
+
+                                  GROUP_MA=('xmin', )),
+
+                      MODELE=model,
+
+                      PRES_REP=_F(GROUP_MA=('xmax', ),
+
+                                  PRES=-200.0))
+
+
+
+reslin = MECA_STATIQUE(identifier='5:1',
+
+                       CHAM_MATER=fieldmat,
+
+                       EXCIT=_F(CHARGE=load),
+
+                       MODELE=model)
+
+
+
+reslin = CALC_CHAMP(identifier='6:1',
+
+                    reuse=reslin,
+
+                    CRITERES=('SIEQ_ELGA', 'SIEQ_ELNO', 'SIEQ_NOEU'),
+
+                    RESULTAT=reslin)
+
+
+
+IMPR_RESU(identifier='7:1',
+
+          FORMAT='MED',
+
+          RESU=_F(RESULTAT=reslin),
+
+          UNITE=80)
+
+
+
+IMPR_RESU(identifier='8:1',
+
+          FORMAT='RESULTAT',
+
+          RESU=_F(NOM_CHAM=('DEPL', ),
+
+                  RESULTAT=reslin,
+
+                  VALE_MAX='OUI',
+
+                  VALE_MIN='OUI'),
+
+          UNITE=8)
+
+FIN()
+# ------------------------------------------------------------------------------------------
+Ouverture en écriture du fichier ./vola.1
+
+<INFO> Démarrage de l'exécution.
+
+                                                                                   
+   ___         _         _       _            __      ___         _                
+  / __|___  __| |___    /_\   __| |_ ___ _ _  \ \    / (_)_ _  __| |_____ __ _____ 
+ | (__/ _ \/ _` / -_)  / _ \ (_-<  _/ -_) '_|  \ \/\/ /| | ' \/ _` / _ \ V  V (_-< 
+  \___\___/\__,_\___| /_/ \_\/__/\__\___|_|     \_/\_/ |_|_||_\__,_\___/\_/\_//__/ 
+                                                 https://code-aster-windows.com    
+                  -- CODE_ASTER -- VERSION : DÉVELOPPEMENT STABILISÉE (testing) --                  
+                               Version 16.5.0 modifiée le 20/12/2023                                
+                          révision 5cbe49dc7a4d - branche 'windows-draft'                           
+                                   Copyright EDF R&D 1991 - 2025                                    
+                                                                                                    
+                              Exécution du : Sun Feb 16 07:04:11 2025                               
+                                        Nom de la machine :                                         
+                                             RogerioPC                                              
+                                        Architecture : 64bit                                        
+                                     Type de processeur : AMD64                                     
+                                      Système d'exploitation :                                      
+                                     Windows-10-10.0.26100-SP0                                      
+                                 Langue des messages : pt (cp1252)                                  
+                                     Version de Python : 3.7.2                                      
+                                     Version de NumPy : 1.16.1                                      
+                                     Parallélisme MPI : inactif                                     
+                                    Parallélisme OpenMP : actif                                     
+                              Nombre de processus OpenMP utilisés : 1                               
+                               Version de la librairie HDF5 : 1.10.9                                
+                                Version de la librairie MED : 4.1.1                                 
+                                 Librairie MFront : non disponible                                  
+                               Version de la librairie MUMPS : 5.5.1                                
+                                  Librairie PETSc : non disponible                                  
+                               Version de la librairie SCOTCH : 7.0.3                               
+
+starting the execution...
+Valeur initiale du temps CPU maximum =   900 secondes
+  Valeur du temps CPU maximum passé aux
+commandes =   810 secondes
+  Réserve CPU prévue = 90 secondes
+
+Ouverture en écriture du fichier ./glob.1
+
+Ouverture en écriture du fichier ./vola.1
+
+Ouverture en lecture du fichier C:\v2023\16.5\lib\aster/elem.1
+
+Nom de la base                          :  ELEMBASE
+     Créée avec la version                   : 
+16.05.00
+     Nombre d'enregistrements utilisés       :  45
+     Nombre d'enregistrements maximum   
+    :  512
+     Nombre d'enregistrements par fichier    :  512
+     Longueur d'enregistrement
+(octets)      :  819200
+     Nombre d'identificateurs utilisés       :  123
+     Taille maximum du
+répertoire            :  300
+     Pourcentage d'utilisation du répertoire :  41 %
+
+Ouverture en lecture du fichier C:\v2023\16.5\lib\aster/elem.1
+
+Nom de la base                          :  ELEMBASE
+     Nombre d'enregistrements utilisés       : 
+45
+     Nombre d'enregistrements maximum        :  512
+     Nombre d'enregistrements par fichier   
+:  512
+     Longueur d'enregistrement (octets)      :  819200
+     Nombre total d'accès en lecture  
+      :  63
+     Volume des accès en lecture             :         49.22 Mo.
+     Nombre total
+d'accès en écriture        :  0
+     Volume des accès en écriture            :          0.00 Mo.
+   
+ Nombre d'identificateurs utilisés       :  123
+     Taille maximum du répertoire            :  300
+
+    Pourcentage d'utilisation du répertoire :  41 %
+
+Relecture des catalogues des éléments faite.
+
+Fin de lecture (durée  1.000000  s.) 
+
+                      Mémoire limite pour l'allocation dynamique : 2560.00 Mo                       
+                              ajouté à l'initialisation du processus :                              
+                                             271.48 Mo                                              
+                               Limite cible du processus : 2831.48 Mo                               
+                         Taille limite des fichiers d'échange : 2048.00 Go                          
+# Mémoire (Mo) :   271.48 /   264.05 /   208.39 /   184.66 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0001   user+syst:        0.23s (syst:        0.22s, elaps:        0.00s)
+# ----------------------------------------------------------------------------------------------
+
+.. _stg1_cmd0:1
+# ----------------------------------------------------------------------------------------------
+# Commande #0002 de fort.1, ligne 15
+mesh = LIRE_MAILLAGE(FORMAT='MED',
+                     INFO=1,
+                     INFO_MED=0,
+                     PARTITIONNEUR='SANS',
+                     UNITE=20,
+                     VERI_MAIL=_F(APLAT=0.001,
+                                  VERIF='OUI'))
+
+Nom MED du maillage : Mesh_1
+
+
+------------ MAILLAGE 00000001 - IMPRESSIONS NIVEAU  1 ------------
+
+
+NOMBRE DE NOEUDS                       31752
+
+NOMBRE DE MAILLES                      48379
+                              SEG2                 1004
+                              QUAD4               31750
+                              HEXA8               15625
+
+NOMBRE DE GROUPES DE MAILLES               7
+
+--------------------------------------------------------------------------------
+
+Vérification du maillage.
+
+# Résultat commande #0002 (LIRE_MAILLAGE): mesh ('<00000001>') de type <Mesh>
+# Mémoire (Mo) :   334.55 /   299.67 /   209.14 /   184.66 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0002   user+syst:        1.48s (syst:        0.25s, elaps:        0.00s)
+# ----------------------------------------------------------------------------------------------
+
+.. _stg1_cmd1:1
+# ----------------------------------------------------------------------------------------------
+# Commande #0003 de fort.1, ligne 27
+model = AFFE_MODELE(AFFE=_F(MODELISATION='3D',
+                            PHENOMENE='MECANIQUE',
+                            TOUT='OUI'),
+                    DISTRIBUTION=_F(METHODE='SOUS_DOMAINE',
+                                    PARTITIONNEUR='METIS'),
+                    INFO=1,
+                    MAILLAGE=mesh,
+                    VERI_JACOBIEN='OUI',
+                    VERI_NORM_IFS='OUI')
+
+Sur les 48379 mailles du maillage 00000001, on a demandé l'affectation de 48379, on a pu en affecter
+48379.
+Modélisation     Formulation      Type maille  Élément fini     Nombre
+_                _                SEG2         MECA_ARETE2      1004
+_                _                QUAD4        MECA_FACE4       31750
+3D               _                HEXA8        MECA_HEXA8       15625
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.07      0.00      0.00
+# Résultat commande #0003 (AFFE_MODELE): model ('<00000002>') de type <Model>
+# Mémoire (Mo) :   334.55 /   307.47 /   210.32 /   205.13 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0003   user+syst:        0.41s (syst:        0.00s, elaps:        0.00s)
+# ----------------------------------------------------------------------------------------------
+
+.. _stg1_cmd2:1
+# ----------------------------------------------------------------------------------------------
+# Commande #0004 de fort.1, ligne 35
+mater = DEFI_MATERIAU(ELAS=_F(B_ENDOGE=0.0,
+                              COEF_AMOR=1.0,
+                              E=197000.0,
+                              K_DESSIC=0.0,
+                              NU=0.3),
+                      INFO=1)
+
+# Résultat commande #0004 (DEFI_MATERIAU): mater ('<00000003>') de type <Material>
+# Mémoire (Mo) :   334.55 /   307.56 /   210.32 /   205.13 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0004   user+syst:        0.00s (syst:        0.00s, elaps:        0.00s)
+# ----------------------------------------------------------------------------------------------
+
+.. _stg1_cmd3:1
+# ----------------------------------------------------------------------------------------------
+# Commande #0005 de fort.1, ligne 47
+fieldmat = AFFE_MATERIAU(AFFE=_F(MATER=mater,
+                                 TOUT='OUI'),
+                         INFO=1,
+                         MAILLAGE=mesh,
+                         MODELE=model)
+
+# Résultat commande #0005 (AFFE_MATERIAU): fieldmat ('<00000004>') de type <MaterialField>
+# Mémoire (Mo) :   334.55 /   307.76 /   210.32 /   205.13 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0005   user+syst:        0.00s (syst:        0.00s, elaps:        0.00s)
+# ----------------------------------------------------------------------------------------------
+
+.. _stg1_cmd4:1
+# ----------------------------------------------------------------------------------------------
+# Commande #0006 de fort.1, ligne 61
+load = AFFE_CHAR_MECA(DDL_IMPO=_F(BLOCAGE='DEPLACEMENT',
+                                  GROUP_MA='xmin'),
+                      DOUBLE_LAGRANGE='OUI',
+                      INFO=1,
+                      MODELE=model,
+                      PRES_REP=_F(GROUP_MA='xmax',
+                                  PRES=-200.0),
+                      VERI_AFFE='OUI',
+                      VERI_NORM='OUI')
+
+# Résultat commande #0006 (AFFE_CHAR_MECA): load ('<00000005>') de type <MechanicalLoadReal>
+# Mémoire (Mo) :   334.55 /   311.03 /   214.73 /   205.13 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0006   user+syst:        0.06s (syst:        0.02s, elaps:        0.00s)
+# ----------------------------------------------------------------------------------------------
+
+.. _stg1_cmd5:1
+# ----------------------------------------------------------------------------------------------
+# Commande #0007 de fort.1, ligne 71
+reslin = MECA_STATIQUE(CHAM_MATER=fieldmat,
+                       EXCIT=_F(CHARGE=load,
+                                TYPE_CHARGE='FIXE_CSTE'),
+                       INFO=1,
+                       INST=0.0,
+                       MODELE=model,
+                       OPTION='SIEF_ELGA',
+                       SOLVEUR=_F(ACCELERATION='AUTO',
+                                  ELIM_LAGR='LAGR2',
+                                  GESTION_MEMOIRE='AUTO',
+                                  LOW_RANK_SEUIL=0.0,
+                                  MATR_DISTRIBUEE='NON',
+                                  METHODE='MUMPS',
+                                  NB_RHS=1,
+                                  NPREC=8,
+                                  PCENT_PIVOT=35,
+                                  POSTTRAITEMENTS='AUTO',
+                                  PRETRAITEMENTS='AUTO',
+                                  REDUCTION_MPI=0,
+                                  RENUM='AUTO',
+                                  RESI_RELA=1e-06,
+                                  STOP_SINGULIER='OUI',
+                                  TYPE_RESOL='AUTO'))
+
+Le système linéaire à résoudre a 96768 degrés de liberté:
+   - 95256 sont des degrés de liberté
+physiques
+     (ils sont portés par 31752 noeuds du maillage)
+   - 1512 sont les couples de
+paramètres de Lagrange associés
+     aux 756 relations linéaires dualisées.
+La matrice est de taille 96768 équations.
+  Elle contient 2599200 termes non nuls si elle est
+symétrique et 5101632 termes non nuls si elle n'est pas symétrique.
+  Soit un taux de remplissage de
+  0.054 %.
+Champ stocké <DEPL> à l'instant  0.000000000000e+00 pour le numéro d'ordre 1
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.44      0.00      1.00
+# Résultat commande #0007 (MECA_STATIQUE): reslin ('<00000006>') de type <ElasticResult>
+# Mémoire (Mo) :   586.32 /   325.95 /   284.85 /   248.43 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0007   user+syst:        5.62s (syst:        1.25s, elaps:        0.00s)
+# ----------------------------------------------------------------------------------------------
+
+.. _stg1_cmd6:1
+# ----------------------------------------------------------------------------------------------
+# Commande #0009 de fort.1, ligne 81
+reslin = CALC_CHAMP(CRITERE='RELATIF',
+                    CRITERES=('SIEQ_ELGA', 'SIEQ_ELNO', 'SIEQ_NOEU'),
+                    INFO=1,
+                    PARALLELISME_TEMPS='NON',
+                    PRECISION=1e-06,
+                    RESULTAT=reslin,
+                    reuse=reslin)
+
+#2      Calculs elementaires et assemblages               CPU (USER+SYST/SYST/ELAPS):      0.49      0.00      0.00
+# Résultat commande #0009 (CALC_CHAMP): reslin ('<00000006>') de type <ElasticResult>
+# Mémoire (Mo) :   586.32 /   385.54 /   316.62 /   248.43 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0009   user+syst:        0.92s (syst:        0.08s, elaps:        0.00s)
+# ----------------------------------------------------------------------------------------------
+
+.. _stg1_cmd7:1
+# ----------------------------------------------------------------------------------------------
+# Commande #0010 de fort.1, ligne 91
+IMPR_RESU(FICHIER_UNIQUE='OUI',
+          FORMAT='MED',
+          INFO=1,
+          PROC0='OUI',
+          RESU=_F(IMPR_NOM_VARI='OUI',
+                  INFO_MAILLAGE='NON',
+                  NOM_RESU_MED='reslin',
+                  RESULTAT=reslin),
+          UNITE=80,
+          VERSION_MED='3.3.1')
+
+Création du fichier au format MED 3.3.1.
+
+# Mémoire (Mo) :   586.32 /   387.52 /   316.62 /   248.43 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0010   user+syst:        0.69s (syst:        0.12s, elaps:        0.00s)
+# ----------------------------------------------------------------------------------------------
+
+.. _stg1_cmd8:1
+# ----------------------------------------------------------------------------------------------
+# Commande #0011 de fort.1, ligne 107
+IMPR_RESU(FORMAT='RESULTAT',
+          INFO=1,
+          PROC0='OUI',
+          RESU=_F(FORMAT_R='1PE21.14',
+                  FORM_TABL='NON',
+                  IMPR_COOR='NON',
+                  NOM_CHAM='DEPL',
+                  RESULTAT=reslin,
+                  VALE_MAX='OUI',
+                  VALE_MIN='OUI'),
+          UNITE=8)
+
+# Mémoire (Mo) :   586.32 /   387.85 /   316.62 /   248.43 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0011   user+syst:        0.05s (syst:        0.00s, elaps:        0.00s)
+# ----------------------------------------------------------------------------------------------
+
+.. _stg1_txt109
+# ----------------------------------------------------------------------------------------------
+# Commande #0012 de fort.1, ligne 109
+FIN(INFO_RESU='NON',
+    RETASSAGE='NON')
+
+Saving objects...
+pi                       <class 'float'>
+e                        <class 'float'>
+tau                      <class 'float'>
+inf                      <class 'float'>
+nan                      <class 'float'>
+mesh                     <class 'libaster.Mesh'>
+model                    <class 'libaster.Model'>
+mater                    <class 'libaster.Material'>
+fieldmat                 <class 'libaster.MaterialField'>
+load                     <class 'libaster.MechanicalLoadReal'>
+reslin                   <class 'libaster.ElasticResult'>
+
+ ╔════════════════════════════════════════════════════════════════════════════════════════════════╗
+ ║ <I> <CATAMESS_89>                                                                              ║
+ ║                                                                                                ║
+ ║ Liste des alarmes émises lors de l'exécution du calcul.                                        ║
+ ║                                                                                                ║
+ ║     Les alarmes que vous avez                                                                  ║
+ ║ choisies d'ignorer sont précédées de (*).                                                      ║
+ ║     Nombre d'occurrences pour chacune des alarmes :                                            ║
+ ║                                                                                                ║
+ ║           aucune alarme                                                                        ║
+ ╚════════════════════════════════════════════════════════════════════════════════════════════════╝
+
+ ---------------------------------------------------------------------------
+ Concepts de la base: G
+    Nom        Type                Taille (Mo)         Nombre      Nombre de
+                                                     d'objets       segments
+    TOTAL                               110.47            213            340
+  
+    00000001   MAILLAGE_SDASTER           5.96             34             54
+    00000002   MODELE_SDASTER             3.17              9             14
+    00000003   MATER_SDASTER              0.00              7              7
+    00000004   CHAM_MATER                 0.00              8             13
+    00000005   CHAR_MECA                  2.01             59             84
+    00000006   EVOL_ELAS                 63.63             37             43
+    00000007   *L_CHARGES                 0.00              4              4
+    00000008   *NUME_EQUA                 5.24              8             13
+    &FOZERO                               0.00              2              2
+    &&_NUM_C                              0.00              1              1
+    &CATA                                30.47             42            103
+    &&NMDOME                              0.00              2              2
+ (*) sous-objets non accessible directement
+ ---------------------------------------------------------------------------
+Nom de la base                          :  GLOBALE
+     Nombre d'enregistrements utilisés       : 
+266
+     Nombre d'enregistrements maximum        :  2684354
+     Nombre d'enregistrements par
+fichier    :  15728
+     Longueur d'enregistrement (octets)      :  819200
+     Nombre total d'accès
+en lecture         :  8
+     Volume des accès en lecture             :          6.25 Mo.
+     Nombre
+total d'accès en écriture        :  528
+     Volume des accès en écriture            :        412.50
+Mo.
+     Nombre d'identificateurs utilisés       :  581
+     Taille maximum du répertoire           
+:  2000
+     Pourcentage d'utilisation du répertoire :  29 %
+
+Nom de la base                          :  VOLATILE
+     Nombre d'enregistrements utilisés       : 
+107
+     Nombre d'enregistrements maximum        :  2684354
+     Nombre d'enregistrements par
+fichier    :  15728
+     Longueur d'enregistrement (octets)      :  819200
+     Nombre total d'accès
+en lecture         :  0
+     Volume des accès en lecture             :          0.00 Mo.
+     Nombre
+total d'accès en écriture        :  291
+     Volume des accès en écriture            :        227.34
+Mo.
+     Nombre d'identificateurs utilisés       :  383
+     Taille maximum du répertoire           
+:  2000
+     Pourcentage d'utilisation du répertoire :  19 %
+
+<I> <FIN> ARRET NORMAL DANS "FIN" PAR APPEL A "JEFINI".
+  
+ <I> <FIN> MEMOIRE JEVEUX MINIMALE REQUISE POUR L'EXECUTION :                     248.43 Mo
+ <I> <FIN> MEMOIRE JEVEUX OPTIMALE REQUISE POUR L'EXECUTION :                     316.62 Mo
+ <I> <FIN> MAXIMUM DE MEMOIRE UTILISEE PAR LE PROCESSUS LORS DE L'EXECUTION :     586.32 Mo
+  
+ <I>       FERMETURE DES BASES EFFECTUEE
+  
+   STATISTIQUES CONCERNANT L'ALLOCATION DYNAMIQUE :
+     TAILLE CUMULEE MAXIMUM            :                  317  Mo.
+     TAILLE CUMULEE LIBEREE            :                  173  Mo.
+     NOMBRE TOTAL D'ALLOCATIONS        :               618725
+     NOMBRE TOTAL DE LIBERATIONS       :               618705
+     APPELS AU MECANISME DE LIBERATION :                    0
+     TAILLE MEMOIRE CUMULEE RECUPEREE  :                   28  Mo.
+     VOLUME DES LECTURES               :                    0  Mo.
+     VOLUME DES ECRITURES              :                   33  Mo.
+  
+   MEMOIRE JEVEUX MINIMALE REQUISE POUR L'EXECUTION :     248.43 Mo
+     - IMPOSE DE NOMBREUX ACCES DISQUE
+     - RALENTIT LA VITESSE D'EXECUTION
+   MEMOIRE JEVEUX OPTIMALE REQUISE POUR L'EXECUTION :     316.62 Mo
+     - LIMITE LES ACCES DISQUE
+     - AMELIORE LA VITESSE D'EXECUTION
+   MAXIMUM DE MEMOIRE UTILISEE PAR LE PROCESSUS     :     586.32 Mo
+     - COMPREND LA MEMOIRE CONSOMMEE PAR  JEVEUX, 
+       LE SUPERVISEUR PYTHON, LES LIBRAIRIES EXTERNES
+  
+ <I>       FIN D'EXECUTION LE : DI-16-FEVR-2025 07:04:25
+Signature of pickled file   : e083b2a2045970bf749f07e644a4c8edea03fd783210df9ca4c898293e4df20c
+Signature of info file      : 7bab8f16a3ca5d940f44f12ecbca34639302b455a067418d9e7613ace928aef9
+Signature of Jeveux database: b5c4a93c328d6de5c9e138426d1ce927f9831544235fea94fb7303778bf69132
+
+ ********************************************************************************
+ * COMMAND                  :       USER :     SYSTEM :   USER+SYS :    ELAPSED *
+ ********************************************************************************
+ * DEBUT                    :       0.23 :       0.22 :       0.45 :       0.00 *
+ * LIRE_MAILLAGE            :       1.48 :       0.25 :       1.73 :       0.00 *
+ * AFFE_MODELE              :       0.41 :       0.00 :       0.41 :       0.00 *
+ * DEFI_MATERIAU            :       0.00 :       0.00 :       0.00 :       0.00 *
+ * AFFE_MATERIAU            :       0.00 :       0.00 :       0.00 :       0.00 *
+ * AFFE_CHAR_MECA           :       0.06 :       0.02 :       0.08 :       0.00 *
+ * MECA_STATIQUE            :       5.62 :       1.25 :       6.88 :       0.00 *
+ * CALC_CHAMP               :       0.92 :       0.08 :       1.00 :       0.00 *
+ * IMPR_RESU                :       0.69 :       0.12 :       0.81 :       0.00 *
+ * IMPR_RESU                :       0.05 :       0.00 :       0.05 :       0.00 *
+ * FIN                      :       0.16 :       0.20 :       0.36 :       0.00 *
+ *  . check syntax          :       0.02 :       0.00 :       0.02 :       0.00 *
+ *  . fortran               :       2.92 :       0.69 :       3.61 :       0.00 *
+ ********************************************************************************
+ * TOTAL_JOB                :       9.69 :       2.14 :      11.83 :       0.00 *
+ ********************************************************************************
+
+# Mémoire (Mo) :   586.32 /    96.34 /   316.62 /   248.43 (VmPeak / VmSize / Optimum / Minimum)
+# Fin commande #0012   user+syst:        0.16s (syst:        0.20s, elaps:        0.00s)
+# ----------------------------------------------------------------------------------------------
+End of the Code_Aster execution
+Exited
+EXECUTION_CODE_ASTER_EXIT_2942=0
+<INFO> Code_Aster run ended, diagnostic : OK
+
+--------------------------------------------------------------------------------
+ Content of C:\Users\Lenovo\AppData\Local\Temp\Lenovo-RogerioPC-interactif_2942 after execution
+
+b''
+
+--------------------------------------------------------------------------------
+ Size of bases
+
+<INFO> size of vola.1 :     87654408 bytes
+<INFO> size of glob.1 :    217907208 bytes
+<INFO> size of pick.code_aster.infos :          147 bytes
+<INFO> size of pick.code_aster.objects :         3206 bytes
+<INFO> size of pick.code_aster.sha :          222 bytes
+
+--------------------------------------------------------------------------------
+ Copying results
+
+copying ...\fort.80...                                                  copying ...\fort.8...                                                   copying ...\fort.6...                                                   copying ...\glob.1...                                                   copying ...\pick.code_aster.infos...                                    copying ...\pick.code_aster.objects...                                  copying ...\pick.code_aster.sha...                                      
+OK                 Code_Aster run ended
+
+
+ 
+ ---------------------------------------------------------------------------------
+                                            cpu     system    cpu+sys    elapsed
+ ---------------------------------------------------------------------------------
+   Preparation of environment              0.00       0.00       0.00       0.00
+   Copying datas                           0.00       0.02       0.02       0.11
+   Code_Aster run                          0.00       0.02       0.02      17.03
+   Copying results                         0.00       0.03       0.03       0.57
+ ---------------------------------------------------------------------------------
+   Total                                   0.03       0.22       0.25      18.54
+ ---------------------------------------------------------------------------------
+
+as_run 2021.0
+
+------------------------------------------------------------
+--- DIAGNOSTIC JOB : OK
+------------------------------------------------------------
+
+
+EXIT_CODE=0
