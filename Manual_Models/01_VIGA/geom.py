@@ -27,6 +27,9 @@ notebook.set("esp", 0.25)
 notebook.set("E", 210)
 notebook.set("v", 0.25)
 
+# clear study
+salome.myStudy.Clear()
+
 ###
 ### GEOM component
 ###
@@ -34,6 +37,7 @@ import math
 import SALOMEDS
 import GEOM
 from salome.geom import geomBuilder
+
 geompy = geomBuilder.New()
 gg = salome.ImportComponentGUI("GEOM")
 
@@ -51,9 +55,10 @@ geompy.addToStudy(OY,"OY")
 geompy.addToStudy(OZ,"OZ")
 geompy.addToStudy(OXYZ,"OXYZ")
 
+# save study
+salome.myStudy.Save(False, False)
 
 if salome.sg.hasDesktop():
-  salome.sg.updateObjBrowser()
+  salome.sg.updateObjBrowser(True)
 
-  import os 
-  os.rename('D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/plate-res.rmed'),"D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/02_YACS_EXEMPLE/plate-res"+str(index)+".rmed"
+  

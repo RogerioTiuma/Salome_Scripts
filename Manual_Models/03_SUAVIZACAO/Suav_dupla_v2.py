@@ -9,13 +9,6 @@ import salome
 
 salome.salome_init()
 
-# Fecha o estudo atual e limpa o GUI
-if salome.myStudy is not None:
-    salome.myStudy.Close()
-
-# Cria um novo estudo limpo
-salome.newStudy()
-
 import salome_notebook
 notebook = salome_notebook.NoteBook()
 sys.path.insert(0, r'D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/03_SUAVIZACAO')

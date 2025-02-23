@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-
-###
-### This file is generated automatically by SALOME v9.10.0 with dump python functionality
-###
-
 import sys
 import salome
 
@@ -12,25 +6,36 @@ import salome_notebook
 notebook = salome_notebook.NoteBook()
 sys.path.insert(0, r'D:/00_MODELOS/GITHUB/Salome_Scripts/Manual_Models/03_SUAVIZACAO')
 
+import GEOM
+from salome.geom import geomBuilder
+import math
+import SALOMEDS
+
+a = 80.
+b = 120.
+c = 160.
+e = 40.
+
+n = int(4)
+nn = int(2)
+nnn = int(1)
+
 ####################################################
 ##       Begin of NoteBook variables section      ##
 ####################################################
-notebook.set("a", 100)
-notebook.set("b", 200)
-notebook.set("c", 400)
-notebook.set("e", 10)
+notebook.set("a", a)
+notebook.set("b", b)
+notebook.set("c", c)
+notebook.set("e", e)
+#notebook.set("n", n)
+#notebook.set("nn", nn)
+#notebook.set("nnn", nnn)
 ####################################################
 ##        End of NoteBook variables section       ##
 ####################################################
 ###
 ### GEOM component
 ###
-
-import GEOM
-from salome.geom import geomBuilder
-import math
-import SALOMEDS
-
 
 geompy = geomBuilder.New()
 
@@ -50,7 +55,9 @@ n2 = geompy.CreateGroup(Partition_1, geompy.ShapeType["FACE"])
 geompy.UnionIDs(n2, [45, 55])
 n3 = geompy.CreateGroup(Partition_1, geompy.ShapeType["FACE"])
 geompy.UnionIDs(n3, [79, 69])
+
 [esp, n1, n2, n3] = geompy.GetExistingSubObjects(Partition_1, False)
+
 geompy.addToStudy( O, 'O' )
 geompy.addToStudy( OX, 'OX' )
 geompy.addToStudy( OY, 'OY' )
@@ -68,43 +75,74 @@ geompy.addToStudyInFather( Partition_1, n3, 'n3' )
 ### SMESH component
 ###
 
-import  SMESH, SALOMEDS
+import SMESH, SALOMEDS
 from salome.smesh import smeshBuilder
 
 smesh = smeshBuilder.New()
-#smesh.SetEnablePublish( False ) # Set to False to avoid publish in study if not needed or in some particular situations:
-                                 # multiples meshes built in parallel, complex and numerous mesh edition (performance)
 
-Mesh_1 = smesh.Mesh(Partition_1,'Mesh_1')
-Regular_1D = Mesh_1.Segment()
-Number_of_Segments_1 = Regular_1D.NumberOfSegments(20)
+# Cria uma Malha
+Mesh_1 = smesh.Mesh(Partition_1,'Malha_1')
+Algo_1D = Mesh_1.Segment()
+
+# Cria um algoritmo 2D para as faces
 Quadrangle_2D = Mesh_1.Quadrangle(algo=smeshBuilder.QUADRANGLE)
-Hexa_3D = Mesh_1.Hexahedron(algo=smeshBuilder.Hexa)
-esp_1 = Mesh_1.GroupOnGeom(esp,'esp',SMESH.EDGE)
-n1_1 = Mesh_1.GroupOnGeom(n1,'n1',SMESH.FACE)
-n2_1 = Mesh_1.GroupOnGeom(n2,'n2',SMESH.FACE)
-n3_1 = Mesh_1.GroupOnGeom(n3,'n3',SMESH.FACE)
+Hypo_2D_QUAD_TRIANG = Quadrangle_2D.QuadrangleParameters( smeshBuilder.QUAD_TRIANGLE_PREF )
 
-Regular_1D_1 = Mesh_1.Segment(geom=esp)
-Number_of_Segments_2 = Regular_1D_1.NumberOfSegments(3)
+# Cria um algoritmo 3D para o volume
+Hexa_3D = Mesh_1.Hexahedron(algo=smeshBuilder.Hexa)
+
+######################### ESPESSURA ##################
+# 1D - Cria um algoritmo para a submalha de espessura
+esp_1D = Mesh_1.Segment(geom=esp)
+Hypo_1D_esp = esp_1D.NumberOfSegments(2)
+
+######################## ÁREA 1 #####################
+# 1D - Cria divisões n_1
+n1_1D = Mesh_1.Segment(geom=n1)
+Hypo_1D_n1 = n1_1D.NumberOfSegments( n )
+
+######################## ÁREA 2 #####################
+# 1D - Cria divisões n_2
+n2_1D = Mesh_1.Segment(geom=n2)
+Hypo_1D_n2 = n2_1D.NumberOfSegments( nn )
+
+######################## ÁREA 3 #####################
+# 1D - Cria divisões n_3
+n3_1D =  Mesh_1.Segment(geom=n3)
+Hypo_1D_n3 = n3_1D.NumberOfSegments( nnn )
+
+# Computa a malha
+
+esp = esp_1D.GetSubMesh()
+N1 = n1_1D.GetSubMesh()
+N2 = n2_1D.GetSubMesh()
+N3 = n3_1D.GetSubMesh()
+
+isDone = Mesh_1.SetMeshOrder([[N1, N2]])
 isDone = Mesh_1.Compute()
-[ esp_1, n1_1, n2_1, n3_1 ] = Mesh_1.GetGroups()
-Sub_mesh_1 = Regular_1D_1.GetSubMesh()
+
 
 
 ## Set names of Mesh objects
-smesh.SetName(Sub_mesh_1, 'Sub-mesh_1')
-smesh.SetName(Regular_1D.GetAlgorithm(), 'Regular_1D')
+smesh.SetName(Mesh_1.GetMesh(), 'Mesh_1')
+smesh.SetName(Algo_1D.GetAlgorithm(), 'Algo_1D')
 smesh.SetName(Quadrangle_2D.GetAlgorithm(), 'Quadrangle_2D')
 smesh.SetName(Hexa_3D.GetAlgorithm(), 'Hexa_3D')
-smesh.SetName(n1_1, 'n1')
-smesh.SetName(n3_1, 'n3')
-smesh.SetName(n2_1, 'n2')
-smesh.SetName(Mesh_1.GetMesh(), 'Mesh_1')
-smesh.SetName(esp_1, 'esp')
-smesh.SetName(Number_of_Segments_2, 'Number of Segments_2')
-smesh.SetName(Number_of_Segments_1, 'Number of Segments_1')
+
+smesh.SetName(Quadrangle_2D, 'Quadrangle_2D')
+smesh.SetName(Hypo_2D_QUAD_TRIANG, 'Hypo_2D_QUAD_TRIANG')
+
+smesh.SetName(Hypo_1D_esp, 'Algo_1D_esp')
+smesh.SetName(Hypo_1D_n1, 'Hypo_1D_N1')
+smesh.SetName(Hypo_1D_n2, 'Hypo_1D_N2')
+smesh.SetName(Hypo_1D_n3, 'Hypo_1D_N3')
+
+smesh.SetName(esp, 'Sub_mesh_Esp')
+smesh.SetName(N1, 'Sub_mesh_N1')
+smesh.SetName(N2, 'Sub_mesh_N2')
+smesh.SetName(N3, 'Sub_mesh_N3')
+
 
 
 if salome.sg.hasDesktop():
-  salome.sg.updateObjBrowser()
+    salome.sg.updateObjBrowser()
