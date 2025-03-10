@@ -155,6 +155,7 @@ Quadrangle_Parameters_4 = Quadrangle_2D_2.QuadrangleParameters(smeshBuilder.QUAD
 [ Menores_1, Maiores_1 ] = Reducao_diag.GetGroups()
 Number_of_Segments_1.SetNumberOfSegments( 4 )
 [ Menores_1, Maiores_1 ] = Reducao_diag.GetGroups()
+
 quad_1 = smesh.Mesh(Partition_3,'quad_1')
 Regular_1D_3 = quad_1.Segment()
 Number_of_Segments_4 = Regular_1D_3.NumberOfSegments(4)
